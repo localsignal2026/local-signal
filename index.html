@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0d1117">
+<title>Local Signal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2358a6ff'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%230d1117'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%230d1117' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+:root {
+  --bg: #0d1117; --bg-raised: #161b22; --bg-input: #1c2128;
+  --border: #30363d; --fg: #e6edf3; --fg-muted: #8b949e; --fg-dim: #6e7681;
+  --accent: #58a6ff; --accent-dim: rgba(88,166,255,0.15); --on-accent: #0d1117;
+  --green: #3fb950; --green-dim: rgba(63,185,80,0.15);
+  --red: #f85149; --red-dim: rgba(248,81,73,0.15);
+  --orange: #d29922; --orange-dim: rgba(210,153,34,0.15);
+  --purple: #bc8cff; --purple-dim: rgba(188,140,255,0.15);
+  --shadow: 0 8px 24px rgba(0,0,0,0.4);
+  --radius: 8px; --radius-lg: 12px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f8fa; --bg-raised: #ffffff; --bg-input: #f0f2f5;
+    --border: #d0d7de; --fg: #1f2328; --fg-muted: #656d76; --fg-dim: #8b949e;
+    --accent: #0969da; --accent-dim: rgba(9,105,218,0.1); --on-accent: #ffffff;
+    --green: #1a7f37; --green-dim: rgba(26,127,55,0.1);
+    --red: #cf222e; --red-dim: rgba(207,34,46,0.1);
+    --orange: #9a6700; --orange-dim: rgba(154,103,0,0.1);
+    --purple: #8250df; --purple-dim: rgba(130,80,223,0.1);
+    --shadow: 0 8px 24px rgba(31,35,40,0.12);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f6f8fa; --bg-raised: #ffffff; --bg-input: #f0f2f5;
+  --border: #d0d7de; --fg: #1f2328; --fg-muted: #656d76; --fg-dim: #8b949e;
+  --accent: #0969da; --accent-dim: rgba(9,105,218,0.1); --on-accent: #ffffff;
+  --green: #1a7f37; --green-dim: rgba(26,127,55,0.1);
+  --red: #cf222e; --red-dim: rgba(207,34,46,0.1);
+  --orange: #9a6700; --orange-dim: rgba(154,103,0,0.1);
+  --purple: #8250df; --purple-dim: rgba(130,80,223,0.1);
+  --shadow: 0 8px 24px rgba(31,35,40,0.12);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px; line-height: 1.5;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.wrap {
+  max-width: 960px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+h1,h2,h3 { text-wrap: balance; }
+input, textarea, select, button { font: inherit; }
+
+/* ---------- Passcode gate ---------- */
+.gate {
+  min-height: 100vh; min-height: 100dvh;
+  display: grid; place-items: center;
+  padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px));
+}
+.gate-card {
+  width: 100%; max-width: 380px; background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px 24px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.gate-brand { display: flex; align-items: center; gap: 12px; }
+.gate-card h1 { font-size: 20px; margin: 0; letter-spacing: -0.02em; }
+.gate-card p { margin: 0; font-size: 14px; color: var(--fg-muted); }
+.gate-error { color: var(--red); font-size: 13px; min-height: 1.2em; margin: 0; }
+.check-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fg-muted); }
+.check-row input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* ---------- App ---------- */
+.error-banner { background: var(--red-dim); border: 1px solid var(--red); color: var(--red); padding: 12px 40px 12px 16px; border-radius: var(--radius); margin: 12px 0; font-size: 13px; white-space: pre-wrap; word-break: break-word; position: relative; }
+.error-banner button { position: absolute; top: 6px; right: 6px; background: none; border: 0; color: var(--red); font-size: 18px; cursor: pointer; padding: 4px 8px; }
+.header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; border-bottom: 1px solid var(--border); }
+.header-icon { width: 36px; height: 36px; background: var(--accent-dim); border-radius: var(--radius); display: grid; place-items: center; color: var(--accent); font-size: 18px; flex-shrink: 0; }
+.header h1 { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+.header .subtitle { font-size: 13px; color: var(--fg-muted); margin: 0; }
+.header .lock-btn { margin-left: auto; }
+.tabs { display: flex; gap: 4px; padding: 12px 0 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tab { padding: 8px 16px; font-size: 14px; font-weight: 500; color: var(--fg-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; margin-bottom: -1px; transition: color 0.15s; }
+.tab:hover { color: var(--fg); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.panel { display: none; padding: 24px 0; }
+.panel.active { display: block; }
+.card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 12px; font-weight: 600; margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-muted); }
+.row-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.row-between h2 { font-size: 16px; margin: 0; min-width: 0; }
+.score-section { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; }
+.score-ring { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.score-ring circle { fill: none; stroke-width: 8; }
+.score-ring .track { stroke: var(--border); }
+.score-ring .value { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+.score-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.score-number { font-family: 'Space Mono', ui-monospace, monospace; font-size: 34px; font-weight: 700; line-height: 1; }
+.score-of { font-size: 12px; color: var(--fg-muted); margin-top: 4px; text-align: center; padding: 0 12px; }
+.score-detail { flex: 1; min-width: 200px; }
+.score-detail h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+.score-detail p { font-size: 14px; color: var(--fg-muted); margin: 0 0 12px; }
+.model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.model-badge { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-input); border-radius: var(--radius); font-size: 13px; min-width: 0; }
+.model-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.model-dot.chatgpt { background: var(--green); } .model-dot.gemini { background: var(--accent); }
+.model-dot.claude { background: var(--purple); } .model-dot.perplexity { background: var(--orange); }
+.model-name { flex: 1; min-width: 0; }
+.model-score { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; }
+.model-err { font-size: 11px; font-weight: 600; color: var(--red); background: var(--red-dim); padding: 2px 6px; border-radius: 99px; white-space: nowrap; }
+.model-note { font-size: 12px; color: var(--fg-muted); margin: 12px 0 0; word-break: break-word; }
+.competitor-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.competitor-row:last-child { border-bottom: none; }
+.competitor-rank { font-family: 'Space Mono', ui-monospace, monospace; font-size: 12px; color: var(--fg-dim); width: 24px; text-align: right; flex-shrink: 0; }
+.competitor-name { flex: 1; font-weight: 500; min-width: 0; }
+.competitor-count { font-family: 'Space Mono', ui-monospace, monospace; font-size: 13px; color: var(--accent); white-space: nowrap; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--fg-muted); margin-bottom: 6px; }
+input[type="text"], input[type="password"], textarea, select { width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--fg); font-size: 16px; outline: none; transition: border-color 0.15s; }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 80px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.88; } .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-ghost { background: transparent; color: var(--fg-muted); padding: 8px 12px; border: 1px solid var(--border); }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-block { width: 100%; padding: 12px 20px; font-size: 15px; }
+.scenario-list { display: flex; flex-direction: column; gap: 8px; }
+.scenario-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-input); border-radius: var(--radius); font-size: 14px; }
+.scenario-item .label { flex: 1; font-weight: 500; min-width: 0; }
+.scenario-item .est { font-size: 12px; color: var(--fg-muted); font-family: 'Space Mono', ui-monospace, monospace; white-space: nowrap; }
+.scenario-item .btn-ghost { border: 0; }
+.key-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.key-row:last-child { border-bottom: none; }
+.key-provider { font-weight: 600; width: 100px; font-size: 14px; }
+.key-status { font-size: 12px; padding: 3px 8px; border-radius: 99px; font-weight: 600; }
+.key-status.active { background: var(--green-dim); color: var(--green); }
+.key-status.missing { background: var(--red-dim); color: var(--red); }
+.key-input { flex: 1; min-width: 0; }
+.key-input input { font-family: 'Space Mono', ui-monospace, monospace; font-size: 14px; }
+.scan-status { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--accent-dim); border-radius: var(--radius); font-size: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.scan-status .spinner { width: 16px; height: 16px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.scan-progress { flex: 1; min-width: 120px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.scan-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
+.history-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; flex-wrap: wrap; }
+.history-row:last-child { border-bottom: none; }
+.history-date { color: var(--fg-muted); font-size: 13px; width: 150px; }
+.history-score { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; color: var(--accent); }
+.toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(140px); background: var(--bg-raised); border: 1px solid var(--border); color: var(--fg); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; z-index: 999; transition: transform 0.3s ease; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.empty { text-align: center; padding: 40px 20px; color: var(--fg-muted); }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty h3 { font-size: 16px; color: var(--fg); margin: 0 0 8px; }
+.empty p { font-size: 14px; margin: 0 0 16px; }
+.setup-steps { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.setup-step { display: flex; gap: 16px; padding: 16px; background: var(--bg-input); border-radius: var(--radius); border: 1px solid var(--border); }
+.step-num { width: 28px; height: 28px; background: var(--accent-dim); color: var(--accent); border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.step-content h3 { font-size: 15px; margin: 0 0 4px; }
+.step-content p { font-size: 13px; color: var(--fg-muted); margin: 0; }
+.hint { font-size: 14px; color: var(--fg-muted); margin: 0 0 16px; }
+@media (max-width: 600px) {
+  .score-ring { width: 116px; height: 116px; }
+  .score-number { font-size: 28px; }
+  .model-grid { grid-template-columns: 1fr 1fr; }
+  .key-row { flex-wrap: wrap; } .key-provider { width: auto; } .key-input { flex-basis: 100%; order: 3; }
+  .history-date { width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- Passcode gate -->
+<div class="gate" id="gate" hidden>
+  <form class="gate-card" id="gate-form" autocomplete="on">
+    <div class="gate-brand">
+      <div class="header-icon">&#9673;</div>
+      <div><h1>Local Signal</h1><p>AI Visibility Scanner</p></div>
+    </div>
+    <p>Enter your passcode to open the dashboard.</p>
+    <input type="text" name="username" value="local-signal" autocomplete="username" hidden>
+    <input type="password" id="gate-input" name="password" placeholder="Passcode" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+    <label class="check-row"><input type="checkbox" id="gate-remember" checked> Remember this device</label>
+    <p class="gate-error" id="gate-error" role="alert"></p>
+    <button class="btn btn-primary btn-block" id="gate-btn" type="submit">Unlock</button>
+  </form>
+</div>
+
+<!-- App -->
+<div class="wrap" id="app" hidden>
+  <div class="header">
+    <div class="header-icon">&#9673;</div>
+    <div><h1>Local Signal</h1><p class="subtitle">AI Visibility Scanner</p></div>
+    <button class="btn btn-ghost btn-sm lock-btn" id="lock-btn" type="button">Lock</button>
+  </div>
+
+  <div class="error-banner" id="error-banner" role="alert" hidden><span id="error-text"></span><button type="button" aria-label="Dismiss" onclick="hideError()">&times;</button></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="dashboard" role="tab">Dashboard</button>
+    <button class="tab" data-tab="scenarios" role="tab">Scenarios</button>
+    <button class="tab" data-tab="keys" role="tab">API Keys</button>
+    <button class="tab" data-tab="settings" role="tab">Business</button>
+  </div>
+
+  <div class="panel active" id="panel-dashboard">
+    <div id="no-business" class="empty" hidden>
+      <div class="empty-icon">&#9673;</div>
+      <h3>Get started with Local Signal</h3>
+      <p>Set up your business profile, add scenarios, and add API keys to run your first AI visibility scan.</p>
+      <div class="setup-steps" id="setup-steps"></div>
+    </div>
+    <div id="has-dashboard" hidden>
+      <div id="scan-running" class="scan-status" hidden>
+        <div class="spinner"></div>
+        <span id="scan-status-text">Scanning...</span>
+        <div class="scan-progress"><div class="scan-progress-bar" id="scan-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="row-between">
+        <h2 id="biz-name-display">&mdash;</h2>
+        <button class="btn btn-primary btn-sm" id="run-scan-btn" type="button">Run Scan</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Visibility Score</div>
+        <div class="score-section">
+          <div class="score-ring">
+            <svg viewBox="0 0 140 140"><circle class="track" cx="70" cy="70" r="58"/><circle class="value" id="score-arc" cx="70" cy="70" r="58" stroke-dasharray="364.42" stroke-dashoffset="364.42"/></svg>
+            <div class="score-label"><div class="score-number" id="score-num">&mdash;</div><div class="score-of" id="score-of"></div></div>
+          </div>
+          <div class="score-detail">
+            <h2 id="score-headline">No scan data yet</h2>
+            <p id="score-desc">Run your first scan to see how AI assistants recommend you.</p>
+            <div class="model-grid" id="model-grid"></div>
+            <p class="model-note" id="model-note" hidden></p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Who AI Recommends Instead</div>
+        <div id="competitor-list"><div class="empty"><p>Competitors will appear after your first scan.</p></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Scan History</div>
+        <div id="history-list"><div class="empty"><p>No scan history yet.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-scenarios">
+    <div class="row-between">
+      <h2>Client Scenarios</h2>
+      <button class="btn btn-primary btn-sm" type="button" onclick="showAddScenario()">+ Add Scenario</button>
+    </div>
+    <p class="hint">Each scenario is a question a potential client might ask an AI assistant. The scanner checks whether you're recommended.</p>
+    <div id="add-scenario-form" class="card" hidden>
+      <div class="form-group"><label for="scenario-label">Scenario label</label><input type="text" id="scenario-label" placeholder="e.g. First-time home buyers"></div>
+      <div class="form-group"><label for="scenario-prompt">Prompt (what a client might ask AI)</label><textarea id="scenario-prompt" placeholder="e.g. I'm a first-time home buyer looking for a realtor in St. Johns County, FL. Who would you recommend?"></textarea></div>
+      <div class="form-group"><label for="scenario-est">Est. monthly inquiries</label><input type="text" id="scenario-est" placeholder="e.g. 8-14"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" type="button" onclick="saveScenario()">Save</button>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="hideAddScenario()">Cancel</button>
+      </div>
+    </div>
+    <div class="scenario-list" id="scenario-list"></div>
+  </div>
+
+  <div class="panel" id="panel-keys">
+    <h2 style="font-size:16px;margin:0 0 4px">API Keys</h2>
+    <p class="hint">Add a key for each AI assistant you want to check. Keys are stored on the server and never shown again after saving.</p>
+    <div class="card" style="padding:12px 16px">
+      <div class="key-row"><span class="key-provider">OpenAI</span><span class="key-status" id="key-status-openai">&mdash;</span><div class="key-input"><input type="password" id="key-openai" placeholder="sk-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('openai')">Save</button></div>
+      <div class="key-row"><span class="key-provider">Google</span><span class="key-status" id="key-status-google">&mdash;</span><div class="key-input"><input type="password" id="key-google" placeholder="AIza..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('google')">Save</button></div>
+      <div class="key-row"><span class="key-provider">Anthropic</span><span class="key-status" id="key-status-anthropic">&mdash;</span><div class="key-input"><input type="password" id="key-anthropic" placeholder="sk-ant-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('anthropic')">Save</button></div>
+      <div class="key-row"><span class="key-provider">Perplexity</span><span class="key-status" id="key-status-perplexity">&mdash;</span><div class="key-input"><input type="password" id="key-perplexity" placeholder="pplx-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('perplexity')">Save</button></div>
+    </div>
+    <p class="hint">OpenAI is also used to read and score every answer, so add it first.</p>
+  </div>
+
+  <div class="panel" id="panel-settings">
+    <h2 style="font-size:16px;margin:0 0 16px">Business Profile</h2>
+    <div class="card">
+      <div class="form-group"><label for="biz-name">Business name</label><input type="text" id="biz-name" placeholder="e.g. Move Me to Florida Team"></div>
+      <div class="form-group"><label for="biz-location">Location</label><input type="text" id="biz-location" placeholder="e.g. St. Johns County, FL"></div>
+      <div class="form-group"><label for="biz-category">Category</label><select id="biz-category"><option value="real_estate">Real Estate</option><option value="night_nurses">Night Nurses</option><option value="nanny_placement">Nanny Placement</option><option value="estate_staffing">Estate Staffing</option><option value="other">Other</option></select></div>
+      <div class="form-group"><label for="biz-desc">Description</label><textarea id="biz-desc" placeholder="e.g. Josh Cotton is a top-producing realtor..."></textarea></div>
+      <div class="form-group"><label for="biz-keywords">Target keywords (comma-separated)</label><input type="text" id="biz-keywords" placeholder="e.g. realtor, real estate agent, home buying"></div>
+      <button class="btn btn-primary" type="button" onclick="saveBusiness()">Save Business</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+var API = 'https://tdosgzlsztliltnepmol.supabase.co/functions/v1/dashboard-api';
+var PASS_KEY = 'ls_passcode';
+var MODEL_NAMES = { chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude', perplexity: 'Perplexity' };
+var passcode = '', unlocked = false, currentBiz = null, pollTimer = null, pollStarted = 0;
+
+/* ---------- small helpers ---------- */
+function $(id) { return document.getElementById(id); }
+function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+function toast(msg, ms) { var el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function () { el.classList.remove('show'); }, ms || 3000); }
+function showError(msg) { $('error-text').textContent = msg; $('error-banner').hidden = false; }
+function hideError() { $('error-banner').hidden = true; }
+function cleanMsg(m) { var mm = String(m || '').match(/"error":"((?:[^"\\]|\\.)*)"/); return mm ? mm[1].replace(/\\"/g, '"') : String(m || 'Something went wrong'); }
+function storeGet() { try { return localStorage.getItem(PASS_KEY) || sessionStorage.getItem(PASS_KEY) || ''; } catch (e) { return ''; } }
+function storeSet(p, remember) { try { (remember ? localStorage : sessionStorage).setItem(PASS_KEY, p); } catch (e) {} }
+function storeClear() { try { localStorage.removeItem(PASS_KEY); sessionStorage.removeItem(PASS_KEY); } catch (e) {} }
+
+function AuthError() { this.message = 'locked'; }
+AuthError.prototype = Object.create(Error.prototype);
+
+async function api(action, params, body) {
+  var url = API + '?action=' + encodeURIComponent(action);
+  if (params) Object.keys(params).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(params[k]); });
+  var opts = { headers: { 'Content-Type': 'application/json', 'x-passcode': passcode } };
+  if (body) { opts.method = 'POST'; opts.body = JSON.stringify(body); }
+  var resp;
+  try { resp = await fetch(url, opts); }
+  catch (e) { throw new Error("Couldn't reach the server. Check your connection and try again."); }
+  var j = {};
+  try { j = await resp.json(); } catch (e) {}
+  if (resp.status === 401) {
+    lock(unlocked ? 'Your passcode was changed. Enter the new one.' : "That passcode didn't work. Try again.");
+    throw new AuthError();
+  }
+  if (!resp.ok || j.error) throw new Error(cleanMsg(j.error || ('Server error ' + resp.status)));
+  return j;
+}
+
+/* ---------- passcode gate ---------- */
+function showGate(msg) {
+  $('app').hidden = true; $('gate').hidden = false;
+  $('gate-error').textContent = msg || '';
+  $('gate-input').value = '';
+  setTimeout(function () { try { $('gate-input').focus(); } catch (e) {} }, 50);
+}
+function lock(msg) {
+  storeClear(); passcode = ''; unlocked = false;
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  showGate(msg);
+}
+$('gate-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  var p = $('gate-input').value.trim();
+  if (!p) return;
+  var btn = $('gate-btn');
+  btn.disabled = true; btn.textContent = 'Checking...'; $('gate-error').textContent = '';
+  passcode = p;
+  try {
+    await api('verify');
+    storeSet(p, $('gate-remember').checked);
+    openApp();
+  } catch (err) {
+    if (!(err instanceof AuthError)) $('gate-error').textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Unlock';
+  }
+});
+$('lock-btn').addEventListener('click', function () { lock('Locked. Enter your passcode to open the dashboard.'); });
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(function (t) {
+  t.addEventListener('click', function () {
+    document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function (x) { x.classList.remove('active'); });
+    t.classList.add('active');
+    $('panel-' + t.dataset.tab).classList.add('active');
+    try { localStorage.setItem('ls_tab', t.dataset.tab); } catch (e) {}
+  });
+});
+
+/* ---------- business ---------- */
+async function loadBusiness() {
+  var r = await api('load_business');
+  if (r.data) {
+    currentBiz = r.data;
+    $('biz-name').value = r.data.name || '';
+    $('biz-location').value = r.data.location || '';
+    $('biz-category').value = r.data.category || 'real_estate';
+    $('biz-desc').value = r.data.description || '';
+    $('biz-keywords').value = (r.data.target_keywords || []).join(', ');
+    $('biz-name-display').textContent = r.data.name;
+    $('no-business').hidden = true; $('has-dashboard').hidden = false;
+  } else {
+    currentBiz = null;
+    $('no-business').hidden = false; $('has-dashboard').hidden = true;
+    renderSetup();
+  }
+}
+
+async function saveBusiness() {
+  var name = $('biz-name').value.trim(), loc = $('biz-location').value.trim();
+  var kw = $('biz-keywords').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+  if (!name || !loc) { toast('Name and location are required'); return; }
+  try {
+    var r = await api('save_business', null, {
+      id: currentBiz ? currentBiz.id : null, name: name, location: loc,
+      category: $('biz-category').value, description: $('biz-desc').value.trim(), target_keywords: kw
+    });
+    if (!currentBiz) currentBiz = r.data; else { currentBiz.name = name; currentBiz.location = loc; }
+    $('biz-name-display').textContent = name;
+    $('no-business').hidden = true; $('has-dashboard').hidden = false;
+    toast('Business saved');
+  } catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
+}
+
+function renderSetup() {
+  $('setup-steps').innerHTML =
+    '<div class="setup-step"><div class="step-num">1</div><div class="step-content"><h3>Add your business</h3><p>Go to the Business tab.</p></div></div>' +
+    '<div class="setup-step"><div class="step-num">2</div><div class="step-content"><h3>Create scenarios</h3><p>Add the client questions you want AI to recommend you for.</p></div></div>' +
+    '<div class="setup-step"><div class="step-num">3</div><div class="step-content"><h3>Add API keys</h3><p>OpenAI first, then any of the others.</p></div></div>' +
+    '<div class="setup-step"><div class="step-num">4</div><div class="step-content"><h3>Run your first scan</h3><p>Tap "Run Scan" on the Dashboard.</p></div></div>';
+}
+
+/* ---------- scenarios ---------- */
+async function loadScenarios() {
+  if (!currentBiz) return;
+  var r = await api('load_scenarios', { business_id: currentBiz.id });
+  var el = $('scenario-list');
+  if (!r.data || r.data.length === 0) { el.innerHTML = '<div class="empty"><p>No scenarios yet.</p></div>'; return; }
+  el.innerHTML = r.data.map(function (s) {
+    return '<div class="scenario-item"><span class="label">' + esc(s.label) + '</span><span class="est">' + esc(s.estimated_monthly_inquiries || '') + '</span>' +
+      '<button class="btn btn-ghost btn-sm" type="button" aria-label="Remove scenario" data-del="' + esc(s.id) + '">&#10005;</button></div>';
+  }).join('');
+  el.querySelectorAll('[data-del]').forEach(function (b) { b.addEventListener('click', function () { deleteScenario(b, b.getAttribute('data-del')); }); });
+}
+function showAddScenario() { $('add-scenario-form').hidden = false; $('scenario-label').focus(); }
+function hideAddScenario() { $('add-scenario-form').hidden = true; }
+
+async function saveScenario() {
+  if (!currentBiz) { toast('Save your business first'); return; }
+  var label = $('scenario-label').value.trim(), prompt = $('scenario-prompt').value.trim(), est = $('scenario-est').value.trim();
+  if (!label || !prompt) { toast('Label and prompt are required'); return; }
+  try {
+    await api('save_scenario', null, { business_id: currentBiz.id, label: label, prompt: prompt, estimated_monthly_inquiries: est || null });
+    $('scenario-label').value = ''; $('scenario-prompt').value = ''; $('scenario-est').value = '';
+    hideAddScenario(); toast('Scenario added'); loadScenarios();
+  } catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
+}
+
+// Two-tap delete (browser confirm dialogs are unreliable on phones)
+async function deleteScenario(btn, id) {
+  if (!btn.dataset.armed) {
+    btn.dataset.armed = '1'; btn.textContent = 'Remove?'; btn.style.color = 'var(--red)';
+    setTimeout(function () { if (btn.isConnected) { delete btn.dataset.armed; btn.innerHTML = '&#10005;'; btn.style.color = ''; } }, 3000);
+    return;
+  }
+  try { await api('delete_scenario', { id: id }); toast('Scenario removed'); loadScenarios(); }
+  catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
+}
+
+/* ---------- api keys ---------- */
+async function loadKeys() {
+  var r = await api('load_keys');
+  var byP = {}; (r.data || []).forEach(function (k) { byP[k.provider] = k; });
+  ['openai', 'google', 'anthropic', 'perplexity'].forEach(function (p) {
+    var el = $('key-status-' + p);
+    if (byP[p] && byP[p].is_active) { el.textContent = 'Saved'; el.className = 'key-status active'; }
+    else { el.textContent = 'Missing'; el.className = 'key-status missing'; }
+  });
+}
+
+async function saveKey(provider) {
+  var input = $('key-' + provider), val = input.value.trim();
+  if (!val) { toast('Paste a key first'); return; }
+  try {
+    await api('save_key', null, { provider: provider, api_key: val });
+    input.value = '';
+    toast(provider.charAt(0).toUpperCase() + provider.slice(1) + ' key saved'); loadKeys();
+  } catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
+}
+
+/* ---------- scans ---------- */
+function setScanUi(running) {
+  $('scan-running').hidden = !running;
+  var btn = $('run-scan-btn');
+  btn.disabled = running; btn.textContent = running ? 'Scanning...' : 'Run Scan';
+}
+
+async function runScan() {
+  if (!currentBiz) { toast('Set up your business first'); return; }
+  hideError();
+  var btn = $('run-scan-btn');
+  btn.disabled = true; btn.textContent = 'Starting...';
+  try {
+    var sr = await api('active_scenarios', { business_id: currentBiz.id });
+    if (sr.running) { toast('A scan is already running'); startPolling(sr.running); return; }
+    if (!sr.data || sr.data.length === 0) { toast('Add at least one scenario first'); setScanUi(false); return; }
+    var scanR = await api('run_scan', null, {
+      business_id: currentBiz.id, business_name: currentBiz.name, location: currentBiz.location, scenarios: sr.data
+    });
+    startPolling(scanR.data.id);
+  } catch (e) {
+    setScanUi(false);
+    if (!(e instanceof AuthError)) showError('Scan could not start: ' + e.message);
+  }
+}
+
+function startPolling(scanId) {
+  setScanUi(true);
+  $('scan-status-text').textContent = 'Starting scan...';
+  $('scan-progress-bar').style.width = '0%';
+  pollStarted = Date.now();
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(function () { pollOnce(scanId); }, 2500);
+  pollOnce(scanId);
+}
+
+async function pollOnce(scanId) {
+  try {
+    var r = await api('poll_scan', { scan_id: scanId });
+    if (!r.data) return;
+    var total = r.data.total_checks || 0, done = r.data.completed_checks || 0;
+    $('scan-progress-bar').style.width = (total ? Math.round(done / total * 100) : 3) + '%';
+    $('scan-status-text').textContent = total ? ('Scanning... ' + done + ' of ' + total + ' checks') : 'Starting scan...';
+    if (r.data.status === 'completed' || r.data.status === 'failed') {
+      clearInterval(pollTimer); pollTimer = null; setScanUi(false);
+      if (r.data.status === 'completed') toast('Scan complete');
+      else showError('The scan failed. Check that your OpenAI key is saved on the API Keys tab, then try again.');
+      loadDashboard();
+    } else if (Date.now() - pollStarted > 8 * 60 * 1000) {
+      clearInterval(pollTimer); pollTimer = null; setScanUi(false);
+      showError('The scan is taking longer than expected. Refresh in a few minutes to see results.');
+    }
+  } catch (e) { /* keep polling quietly; auth errors already lock the page */ }
+}
+$('run-scan-btn').addEventListener('click', runScan);
+
+/* ---------- dashboard ---------- */
+async function loadDashboard() {
+  if (!currentBiz) return;
+  var r = await api('load_dashboard', { business_id: currentBiz.id });
+
+  var v = r.visibility;
+  if (v) {
+    var score = Math.round(Number(v.visibility_score) || 0);
+    $('score-num').textContent = score + '%';
+    $('score-of').textContent = (v.mentions || 0) + ' of ' + (v.total_checks || 0) + ' checks';
+    var c = 2 * Math.PI * 58, off = c - (c * score / 100);
+    $('score-arc').setAttribute('stroke-dasharray', c);
+    $('score-arc').setAttribute('stroke-dashoffset', off);
+    $('score-headline').textContent = score === 0 ? 'Not being recommended yet' : score < 30 ? 'Low visibility' : score < 60 ? 'Building momentum' : 'Strong AI presence';
+    $('score-desc').textContent = score === 0 ? "AI assistants aren't naming you in these searches yet." : score < 30 ? 'You show up in some searches. Plenty of room to grow.' : score < 60 ? "You're recommended in a good share of searches." : 'AI assistants name you often.';
+  }
+
+  var mb = r.modelBreakdown || {}, notes = [];
+  $('model-grid').innerHTML = ['chatgpt', 'gemini', 'claude', 'perplexity'].filter(function (m) { return mb[m]; }).map(function (m) {
+    var d = mb[m];
+    var scoreTxt = d.total ? (d.mentioned + '/' + d.total) : '&mdash;';
+    var err = '';
+    if (d.errors) {
+      err = '<span class="model-err">' + (d.total ? d.errors + ' failed' : 'failed') + '</span>';
+      var raw = String(d.lastError || '').replace(/^ERROR:\s*/, '');
+      var mm = raw.match(/"message"\s*:\s*"([^"]+)"/);
+      notes.push(MODEL_NAMES[m] + ': ' + (mm ? mm[1] : raw).slice(0, 140));
+    }
+    return '<div class="model-badge"><div class="model-dot ' + m + '"></div><span class="model-name">' + MODEL_NAMES[m] + '</span>' + err + '<span class="model-score">' + scoreTxt + '</span></div>';
+  }).join('');
+  var note = $('model-note');
+  if (notes.length) { note.hidden = false; note.textContent = "Failed checks aren't counted in your score. Usually this means that account is out of credits or the key is wrong. " + notes.join(' · '); }
+  else note.hidden = true;
+
+  var comps = (r.competitors || []).filter(function (c) { return c.competitor_name; });
+  $('competitor-list').innerHTML = comps.length ? comps.map(function (c, i) {
+    return '<div class="competitor-row"><span class="competitor-rank">' + (i + 1) + '</span><span class="competitor-name">' + esc(c.competitor_name) + '</span><span class="competitor-count">' + c.mention_count + ' mention' + (Number(c.mention_count) !== 1 ? 's' : '') + '</span></div>';
+  }).join('') : '<div class="empty"><p>Competitors will appear after your first scan.</p></div>';
+
+  var hist = r.history || [];
+  $('history-list').innerHTML = hist.length ? hist.map(function (h) {
+    var d = new Date(h.scan_date);
+    return '<div class="history-row"><span class="history-date">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '</span><span class="history-score">' + Math.round(Number(h.visibility_score) || 0) + '%</span><span style="color:var(--fg-muted);font-size:13px">' + (h.mentions || 0) + ' of ' + (h.total_checks || 0) + ' checks</span></div>';
+  }).join('') : '<div class="empty"><p>No scan history yet.</p></div>';
+}
+
+/* ---------- start ---------- */
+async function openApp() {
+  unlocked = true;
+  $('gate').hidden = true; $('app').hidden = false; hideError();
+  try {
+    var savedTab; try { savedTab = localStorage.getItem('ls_tab'); } catch (e) {}
+    if (savedTab) { var t = document.querySelector('.tab[data-tab="' + savedTab + '"]'); if (t) t.click(); }
+    await loadBusiness();
+    await Promise.all([loadScenarios(), loadKeys(), loadDashboard()]);
+  } catch (e) {
+    if (!(e instanceof AuthError)) showError("Couldn't load your data: " + e.message);
+  }
+}
+
+(function init() {
+  var saved = storeGet();
+  if (saved) { passcode = saved; openApp(); }
+  else showGate('');
+})();
+</script>
+</body>
+</html>
