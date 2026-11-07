@@ -488,9 +488,16 @@ async function api(action, params, body) {
   if (params) Object.keys(params).forEach(function (k) { if (params[k] != null) url += '&' + k + '=' + encodeURIComponent(params[k]); });
   var opts = { headers: { 'Content-Type': 'application/json', 'x-passcode': state.passcode } };
   if (body) { opts.method = 'POST'; opts.body = JSON.stringify(body); }
-  var resp;
+  var resp, ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
+  if (ctrl) opts.signal = ctrl.signal;
   try { resp = await fetch(url, opts); }
-  catch (e) { throw new Error("Couldn't reach the server. Check your connection and try again."); }
+  catch (e) {
+    throw new Error(e && e.name === 'AbortError'
+      ? "The server didn't answer. This phone or network may be blocking supabase.co: try turning off Wi-Fi, a VPN or an ad blocker."
+      : "Couldn't reach the server (supabase.co). This phone or network may be blocking it: try turning off Wi-Fi, a VPN or an ad blocker.");
+  }
+  finally { if (timer) clearTimeout(timer); }
   var j = {};
   try { j = await resp.json(); } catch (e) {}
   if (resp.status === 401) {
