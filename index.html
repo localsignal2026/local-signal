@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
 <style>
 :root {
-  --bg: #0d1117; --bg-raised: #161b22; --bg-input: #1c2128;
+  --bg: #0d1117; --bg-raised: #161b22; --bg-input: #1c2128; --bg-hover: #1f2630;
   --border: #30363d; --fg: #e6edf3; --fg-muted: #8b949e; --fg-dim: #6e7681;
   --accent: #58a6ff; --accent-dim: rgba(88,166,255,0.15); --on-accent: #0d1117;
   --green: #3fb950; --green-dim: rgba(63,185,80,0.15);
@@ -21,11 +21,12 @@
   --purple: #bc8cff; --purple-dim: rgba(188,140,255,0.15);
   --shadow: 0 8px 24px rgba(0,0,0,0.4);
   --radius: 8px; --radius-lg: 12px;
+  --mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg: #f6f8fa; --bg-raised: #ffffff; --bg-input: #f0f2f5;
+    --bg: #f6f8fa; --bg-raised: #ffffff; --bg-input: #f0f2f5; --bg-hover: #eaeef2;
     --border: #d0d7de; --fg: #1f2328; --fg-muted: #656d76; --fg-dim: #8b949e;
     --accent: #0969da; --accent-dim: rgba(9,105,218,0.1); --on-accent: #ffffff;
     --green: #1a7f37; --green-dim: rgba(26,127,55,0.1);
@@ -37,7 +38,7 @@
   }
 }
 :root[data-theme="light"] {
-  --bg: #f6f8fa; --bg-raised: #ffffff; --bg-input: #f0f2f5;
+  --bg: #f6f8fa; --bg-raised: #ffffff; --bg-input: #f0f2f5; --bg-hover: #eaeef2;
   --border: #d0d7de; --fg: #1f2328; --fg-muted: #656d76; --fg-dim: #8b949e;
   --accent: #0969da; --accent-dim: rgba(9,105,218,0.1); --on-accent: #ffffff;
   --green: #1a7f37; --green-dim: rgba(26,127,55,0.1);
@@ -58,26 +59,21 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .wrap {
-  max-width: 960px; margin: 0 auto;
+  max-width: 1000px; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 0 48px;
+  padding-block: 0 56px;
 }
-h1,h2,h3 { text-wrap: balance; }
+h1, h2, h3 { text-wrap: balance; }
 input, textarea, select, button { font: inherit; }
+a { color: var(--accent); }
+.mono { font-family: var(--mono); }
+.muted { color: var(--fg-muted); }
+.small { font-size: 13px; }
 
 /* ---------- Passcode gate ---------- */
-.gate {
-  min-height: 100vh; min-height: 100dvh;
-  display: grid; place-items: center;
-  padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px));
-}
-.gate-card {
-  width: 100%; max-width: 380px; background: var(--bg-raised);
-  border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 28px 24px; box-shadow: var(--shadow);
-  display: flex; flex-direction: column; gap: 16px;
-}
+.gate { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
+.gate-card { width: 100%; max-width: 380px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 24px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 16px; }
 .gate-brand { display: flex; align-items: center; gap: 12px; }
 .gate-card h1 { font-size: 20px; margin: 0; letter-spacing: -0.02em; }
 .gate-card p { margin: 0; font-size: 14px; color: var(--fg-muted); }
@@ -85,101 +81,166 @@ input, textarea, select, button { font: inherit; }
 .check-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fg-muted); }
 .check-row input { width: 18px; height: 18px; accent-color: var(--accent); }
 
-/* ---------- App ---------- */
+/* ---------- Shell ---------- */
 .error-banner { background: var(--red-dim); border: 1px solid var(--red); color: var(--red); padding: 12px 40px 12px 16px; border-radius: var(--radius); margin: 12px 0; font-size: 13px; white-space: pre-wrap; word-break: break-word; position: relative; }
 .error-banner button { position: absolute; top: 6px; right: 6px; background: none; border: 0; color: var(--red); font-size: 18px; cursor: pointer; padding: 4px 8px; }
-.header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; border-bottom: 1px solid var(--border); }
+.header { display: flex; align-items: center; gap: 12px; padding: 18px 0 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .header-icon { width: 36px; height: 36px; background: var(--accent-dim); border-radius: var(--radius); display: grid; place-items: center; color: var(--accent); font-size: 18px; flex-shrink: 0; }
-.header h1 { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
-.header .subtitle { font-size: 13px; color: var(--fg-muted); margin: 0; }
-.header .lock-btn { margin-left: auto; }
-.tabs { display: flex; gap: 4px; padding: 12px 0 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
-.tab { padding: 8px 16px; font-size: 14px; font-weight: 500; color: var(--fg-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; margin-bottom: -1px; transition: color 0.15s; }
+.brand { min-width: 0; }
+.brand h1 { font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.02em; line-height: 1.2; }
+.brand p { font-size: 12px; color: var(--fg-muted); margin: 0; }
+.header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; min-width: 0; }
+.biz-switch { max-width: 220px; padding: 7px 10px !important; font-size: 14px !important; }
+.tabs { display: flex; gap: 2px; padding: 10px 0 0; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 8px 14px; font-size: 14px; font-weight: 500; color: var(--fg-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; margin-bottom: -1px; }
 .tab:hover { color: var(--fg); }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.panel { display: none; padding: 24px 0; }
+.panel { display: none; padding: 20px 0; }
 .panel.active { display: block; }
-.card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
-.card-title { font-size: 12px; font-weight: 600; margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-muted); }
-.row-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-.row-between h2 { font-size: 16px; margin: 0; min-width: 0; }
-.score-section { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; }
-.score-ring { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
-.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.score-ring circle { fill: none; stroke-width: 8; }
-.score-ring .track { stroke: var(--border); }
-.score-ring .value { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
-.score-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.score-number { font-family: 'Space Mono', ui-monospace, monospace; font-size: 34px; font-weight: 700; line-height: 1; }
-.score-of { font-size: 12px; color: var(--fg-muted); margin-top: 4px; text-align: center; padding: 0 12px; }
-.score-detail { flex: 1; min-width: 200px; }
-.score-detail h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
-.score-detail p { font-size: 14px; color: var(--fg-muted); margin: 0 0 12px; }
-.model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-.model-badge { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-input); border-radius: var(--radius); font-size: 13px; min-width: 0; }
-.model-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.model-dot.chatgpt { background: var(--green); } .model-dot.gemini { background: var(--accent); }
-.model-dot.claude { background: var(--purple); } .model-dot.perplexity { background: var(--orange); }
-.model-name { flex: 1; min-width: 0; }
-.model-score { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; }
-.model-err { font-size: 11px; font-weight: 600; color: var(--red); background: var(--red-dim); padding: 2px 6px; border-radius: 99px; white-space: nowrap; }
-.model-note { font-size: 12px; color: var(--fg-muted); margin: 12px 0 0; word-break: break-word; }
-.competitor-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-.competitor-row:last-child { border-bottom: none; }
-.competitor-rank { font-family: 'Space Mono', ui-monospace, monospace; font-size: 12px; color: var(--fg-dim); width: 24px; text-align: right; flex-shrink: 0; }
-.competitor-name { flex: 1; font-weight: 500; min-width: 0; }
-.competitor-count { font-family: 'Space Mono', ui-monospace, monospace; font-size: 13px; color: var(--accent); white-space: nowrap; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--fg-muted); margin-bottom: 6px; }
-input[type="text"], input[type="password"], textarea, select { width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--fg); font-size: 16px; outline: none; transition: border-color 0.15s; }
-input:focus, textarea:focus, select:focus { border-color: var(--accent); }
-textarea { resize: vertical; min-height: 80px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+.card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; margin-bottom: 16px; min-width: 0; }
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.card-title { font-size: 12px; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.07em; color: var(--fg-muted); }
+.card-sub { font-size: 12px; color: var(--fg-dim); margin: 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.grid-2 > .card { margin-bottom: 0; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hint { font-size: 14px; color: var(--fg-muted); margin: 0 0 16px; }
+
+/* ---------- Buttons & forms ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s, background 0.15s; text-decoration: none; }
 .btn:hover { opacity: 0.88; } .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary { background: var(--accent); color: var(--on-accent); }
-.btn-ghost { background: transparent; color: var(--fg-muted); padding: 8px 12px; border: 1px solid var(--border); }
+.btn-ghost { background: transparent; color: var(--fg-muted); border: 1px solid var(--border); }
 .btn-sm { padding: 6px 12px; font-size: 13px; }
 .btn-block { width: 100%; padding: 12px 20px; font-size: 15px; }
-.scenario-list { display: flex; flex-direction: column; gap: 8px; }
-.scenario-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-input); border-radius: var(--radius); font-size: 14px; }
-.scenario-item .label { flex: 1; font-weight: 500; min-width: 0; }
-.scenario-item .est { font-size: 12px; color: var(--fg-muted); font-family: 'Space Mono', ui-monospace, monospace; white-space: nowrap; }
-.scenario-item .btn-ghost { border: 0; }
+.btn-link { background: none; border: 0; color: var(--accent); cursor: pointer; padding: 0; font-size: 13px; font-weight: 600; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 16px; }
+.form-group { margin-bottom: 14px; min-width: 0; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--fg-muted); margin-bottom: 6px; }
+.form-group .help { font-size: 12px; color: var(--fg-dim); margin: 4px 0 0; }
+input[type="text"], input[type="password"], input[type="url"], input[type="number"], textarea, select { width: 100%; padding: 9px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--fg); font-size: 16px; outline: none; transition: border-color 0.15s; }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 76px; }
+.form-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--fg-dim); margin: 8px 0 12px; grid-column: 1 / -1; padding-top: 8px; border-top: 1px solid var(--border); }
+.section-label:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+
+/* ---------- Scan bar ---------- */
+.scanbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.scanbar h2 { font-size: 17px; margin: 0; min-width: 0; flex: 1 1 200px; }
+.scanbar .next { font-size: 12px; color: var(--fg-muted); }
+.scan-status { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--accent-dim); border-radius: var(--radius); font-size: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.scan-progress { flex: 1; min-width: 120px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.scan-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
+
+/* ---------- KPIs ---------- */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; min-width: 0; }
+.kpi-label { font-size: 12px; color: var(--fg-muted); margin: 0 0 6px; font-weight: 500; }
+.kpi-value { font-family: var(--mono); font-size: 26px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+.kpi-value small { font-size: 14px; color: var(--fg-muted); font-weight: 400; }
+.kpi-foot { font-size: 12px; color: var(--fg-dim); margin: 6px 0 0; }
+.delta-up { color: var(--green); } .delta-down { color: var(--red); }
+
+/* ---------- Engines ---------- */
+.engine-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 64px; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; }
+.engine-name { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.dot.chatgpt { background: var(--green); } .dot.gemini { background: var(--accent); }
+.dot.claude { background: var(--purple); } .dot.perplexity { background: var(--orange); }
+.bar { height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+.bar > span { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
+.bar.chatgpt > span { background: var(--green); } .bar.gemini > span { background: var(--accent); }
+.bar.claude > span { background: var(--purple); } .bar.perplexity > span { background: var(--orange); }
+.engine-val { font-family: var(--mono); font-size: 13px; text-align: right; white-space: nowrap; }
+.engine-err { font-size: 11px; color: var(--red); }
+
+/* ---------- Trend ---------- */
+.trend svg { width: 100%; height: auto; display: block; overflow: visible; }
+.trend .grid line { stroke: var(--border); stroke-width: 1; }
+.trend .grid text, .trend .xl text { fill: var(--fg-dim); font-size: 11px; font-family: var(--mono); }
+.trend .line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.trend .area { fill: var(--accent-dim); }
+.trend .pt { fill: var(--bg-raised); stroke: var(--accent); stroke-width: 2; }
+
+/* ---------- Lists ---------- */
+.list-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; min-width: 0; }
+.list-row:last-child { border-bottom: none; }
+.rank { font-family: var(--mono); font-size: 12px; color: var(--fg-dim); width: 22px; text-align: right; flex-shrink: 0; }
+.grow { flex: 1; min-width: 0; }
+.name { font-weight: 500; overflow-wrap: anywhere; }
+.meta { font-size: 12px; color: var(--fg-muted); }
+.count { font-family: var(--mono); font-size: 13px; color: var(--accent); white-space: nowrap; }
+.dots { display: inline-flex; gap: 4px; align-items: center; }
+.dots .dot.off { background: var(--border); }
+.own-tag { font-size: 11px; font-weight: 600; color: var(--green); background: var(--green-dim); padding: 1px 6px; border-radius: 99px; margin-left: 6px; }
+.empty { text-align: center; padding: 28px 16px; color: var(--fg-muted); font-size: 14px; }
+.empty h3 { font-size: 16px; color: var(--fg); margin: 0 0 8px; }
+
+/* ---------- Chips ---------- */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.chip { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--bg-input); color: var(--fg-muted); border: 1px solid var(--border); white-space: nowrap; }
+.chip.t1 { color: var(--accent); background: var(--accent-dim); border-color: transparent; }
+.chip.t2 { color: var(--purple); background: var(--purple-dim); border-color: transparent; }
+.chip.t3 { color: var(--fg-muted); }
+.chip.ok { color: var(--green); background: var(--green-dim); border-color: transparent; }
+.chip.no { color: var(--red); background: var(--red-dim); border-color: transparent; }
+.chip.warn { color: var(--orange); background: var(--orange-dim); border-color: transparent; }
+
+/* ---------- Prompts ---------- */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.seg button { background: none; border: 0; padding: 6px 12px; font-size: 13px; color: var(--fg-muted); cursor: pointer; font-weight: 500; }
+.seg button.on { background: var(--accent-dim); color: var(--accent); }
+.prompt { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-raised); margin-bottom: 10px; min-width: 0; }
+.prompt.inactive { opacity: 0.6; }
+.prompt-head { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; cursor: pointer; width: 100%; background: none; border: 0; color: inherit; text-align: left; }
+.prompt-head:hover { background: var(--bg-hover); border-radius: var(--radius-lg); }
+.prompt-q { font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.prompt-score { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.prompt-score .mono { font-size: 13px; }
+.prompt-body { padding: 4px 14px 14px; border-top: 1px solid var(--border); }
+.answers { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.answer { background: var(--bg-input); border-radius: var(--radius); padding: 10px 12px; min-width: 0; }
+.answer-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; font-weight: 600; }
+.answer-head .meta { font-weight: 400; }
+.answer p { margin: 6px 0 0; font-size: 13px; }
+.answer details { margin-top: 6px; }
+.answer summary { cursor: pointer; font-size: 12px; color: var(--accent); font-weight: 600; }
+.answer pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 13px; margin: 8px 0 0; max-height: 360px; overflow: auto; color: var(--fg); }
+
+/* ---------- Keys ---------- */
 .key-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .key-row:last-child { border-bottom: none; }
-.key-provider { font-weight: 600; width: 100px; font-size: 14px; }
+.key-provider { font-weight: 600; width: 96px; font-size: 14px; }
 .key-status { font-size: 12px; padding: 3px 8px; border-radius: 99px; font-weight: 600; }
 .key-status.active { background: var(--green-dim); color: var(--green); }
 .key-status.missing { background: var(--red-dim); color: var(--red); }
 .key-input { flex: 1; min-width: 0; }
-.key-input input { font-family: 'Space Mono', ui-monospace, monospace; font-size: 14px; }
-.scan-status { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--accent-dim); border-radius: var(--radius); font-size: 14px; margin-bottom: 16px; flex-wrap: wrap; }
-.scan-status .spinner { width: 16px; height: 16px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.scan-progress { flex: 1; min-width: 120px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-.scan-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
-.history-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; flex-wrap: wrap; }
-.history-row:last-child { border-bottom: none; }
-.history-date { color: var(--fg-muted); font-size: 13px; width: 150px; }
-.history-score { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; color: var(--accent); }
-.toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(140px); background: var(--bg-raised); border: 1px solid var(--border); color: var(--fg); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; z-index: 999; transition: transform 0.3s ease; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
-.toast.show { transform: translateX(-50%) translateY(0); }
-.empty { text-align: center; padding: 40px 20px; color: var(--fg-muted); }
-.empty-icon { font-size: 36px; margin-bottom: 12px; }
-.empty h3 { font-size: 16px; color: var(--fg); margin: 0 0 8px; }
-.empty p { font-size: 14px; margin: 0 0 16px; }
-.setup-steps { display: flex; flex-direction: column; gap: 12px; text-align: left; }
-.setup-step { display: flex; gap: 16px; padding: 16px; background: var(--bg-input); border-radius: var(--radius); border: 1px solid var(--border); }
-.step-num { width: 28px; height: 28px; background: var(--accent-dim); color: var(--accent); border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-.step-content h3 { font-size: 15px; margin: 0 0 4px; }
-.step-content p { font-size: 13px; color: var(--fg-muted); margin: 0; }
-.hint { font-size: 14px; color: var(--fg-muted); margin: 0 0 16px; }
-@media (max-width: 600px) {
-  .score-ring { width: 116px; height: 116px; }
-  .score-number { font-size: 28px; }
-  .model-grid { grid-template-columns: 1fr 1fr; }
+.key-input input { font-family: var(--mono); font-size: 14px; }
+
+/* ---------- Markets ---------- */
+.market-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px auto; gap: 8px; align-items: center; padding: 6px 0; }
+
+.toast { visibility: hidden; position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(160px); background: var(--bg-raised); border: 1px solid var(--border); color: var(--fg); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; z-index: 999; transition: transform 0.3s ease; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+.toast.show { visibility: visible; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi-value { font-size: 22px; }
+}
+@media (max-width: 480px) {
+  .grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .engine-row { grid-template-columns: 84px minmax(0, 1fr) 56px; }
   .key-row { flex-wrap: wrap; } .key-provider { width: auto; } .key-input { flex-basis: 100%; order: 3; }
-  .history-date { width: auto; }
+  .biz-switch { max-width: 160px; }
+  .tab { padding: 8px 10px; }
+  .market-row { grid-template-columns: minmax(0, 1fr) 92px auto; }
 }
 </style>
 </head>
@@ -190,7 +251,7 @@ textarea { resize: vertical; min-height: 80px; }
   <form class="gate-card" id="gate-form" autocomplete="on">
     <div class="gate-brand">
       <div class="header-icon">&#9673;</div>
-      <div><h1>Local Signal</h1><p>AI Visibility Scanner</p></div>
+      <div><h1>Local Signal</h1><p>AI visibility for local businesses</p></div>
     </div>
     <p>Enter your passcode to open the dashboard.</p>
     <input type="text" name="username" value="local-signal" autocomplete="username" hidden>
@@ -205,101 +266,175 @@ textarea { resize: vertical; min-height: 80px; }
 <div class="wrap" id="app" hidden>
   <div class="header">
     <div class="header-icon">&#9673;</div>
-    <div><h1>Local Signal</h1><p class="subtitle">AI Visibility Scanner</p></div>
-    <button class="btn btn-ghost btn-sm lock-btn" id="lock-btn" type="button">Lock</button>
+    <div class="brand"><h1>Local Signal</h1><p>AI visibility for local businesses</p></div>
+    <div class="header-right">
+      <select id="biz-switch" class="biz-switch" aria-label="Business" hidden></select>
+      <button class="btn btn-ghost btn-sm" id="lock-btn" type="button">Lock</button>
+    </div>
   </div>
 
-  <div class="error-banner" id="error-banner" role="alert" hidden><span id="error-text"></span><button type="button" aria-label="Dismiss" onclick="hideError()">&times;</button></div>
+  <div class="error-banner" id="error-banner" role="alert" hidden><span id="error-text"></span><button type="button" aria-label="Dismiss" id="error-close">&times;</button></div>
 
   <div class="tabs" role="tablist">
-    <button class="tab active" data-tab="dashboard" role="tab">Dashboard</button>
-    <button class="tab" data-tab="scenarios" role="tab">Scenarios</button>
-    <button class="tab" data-tab="keys" role="tab">API Keys</button>
-    <button class="tab" data-tab="settings" role="tab">Business</button>
+    <button class="tab active" data-tab="overview" role="tab" type="button">Overview</button>
+    <button class="tab" data-tab="prompts" role="tab" type="button">Prompts</button>
+    <button class="tab" data-tab="competitors" role="tab" type="button">Competitors</button>
+    <button class="tab" data-tab="business" role="tab" type="button">Business</button>
+    <button class="tab" data-tab="settings" role="tab" type="button">Settings</button>
   </div>
 
-  <div class="panel active" id="panel-dashboard">
-    <div id="no-business" class="empty" hidden>
-      <div class="empty-icon">&#9673;</div>
-      <h3>Get started with Local Signal</h3>
-      <p>Set up your business profile, add scenarios, and add API keys to run your first AI visibility scan.</p>
-      <div class="setup-steps" id="setup-steps"></div>
+  <!-- ===== Overview ===== -->
+  <div class="panel active" id="panel-overview">
+    <div id="ov-empty" class="card empty" hidden>
+      <h3>Add your business to get started</h3>
+      <p>Open the Business tab, then add the questions customers ask AI on the Prompts tab.</p>
     </div>
-    <div id="has-dashboard" hidden>
+    <div id="ov-main">
+      <div class="scanbar">
+        <h2 id="ov-title">&mdash;</h2>
+        <span class="next" id="ov-next"></span>
+        <button class="btn btn-primary btn-sm" id="run-scan-btn" type="button">Run scan</button>
+      </div>
       <div id="scan-running" class="scan-status" hidden>
         <div class="spinner"></div>
-        <span id="scan-status-text">Scanning...</span>
+        <span id="scan-status-text">Scanning&hellip;</span>
         <div class="scan-progress"><div class="scan-progress-bar" id="scan-progress-bar" style="width:0%"></div></div>
       </div>
-      <div class="row-between">
-        <h2 id="biz-name-display">&mdash;</h2>
-        <button class="btn btn-primary btn-sm" id="run-scan-btn" type="button">Run Scan</button>
+
+      <div class="kpis">
+        <div class="kpi"><p class="kpi-label">AI visibility</p><div class="kpi-value" id="kpi-score">&mdash;</div><p class="kpi-foot" id="kpi-score-foot">share of answers that name you</p></div>
+        <div class="kpi"><p class="kpi-label">Prompt coverage</p><div class="kpi-value" id="kpi-cov">&mdash;</div><p class="kpi-foot">prompts where any AI names you</p></div>
+        <div class="kpi"><p class="kpi-label">Content coverage</p><div class="kpi-value" id="kpi-content">&mdash;</div><p class="kpi-foot">prompts with a page on your site</p></div>
+        <div class="kpi"><p class="kpi-label">Last scan</p><div class="kpi-value" id="kpi-checks">&mdash;</div><p class="kpi-foot" id="kpi-checks-foot">live answers checked</p></div>
       </div>
-      <div class="card">
-        <div class="card-title">Visibility Score</div>
-        <div class="score-section">
-          <div class="score-ring">
-            <svg viewBox="0 0 140 140"><circle class="track" cx="70" cy="70" r="58"/><circle class="value" id="score-arc" cx="70" cy="70" r="58" stroke-dasharray="364.42" stroke-dashoffset="364.42"/></svg>
-            <div class="score-label"><div class="score-number" id="score-num">&mdash;</div><div class="score-of" id="score-of"></div></div>
-          </div>
-          <div class="score-detail">
-            <h2 id="score-headline">No scan data yet</h2>
-            <p id="score-desc">Run your first scan to see how AI assistants recommend you.</p>
-            <div class="model-grid" id="model-grid"></div>
-            <p class="model-note" id="model-note" hidden></p>
-          </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><p class="card-title">Visibility by AI engine</p><p class="card-sub">latest full scan</p></div>
+          <div id="ov-engines"><div class="empty">No scans yet.</div></div>
+        </div>
+        <div class="card trend">
+          <div class="card-head"><p class="card-title">Visibility over time</p><p class="card-sub" id="trend-sub"></p></div>
+          <div id="ov-trend"><div class="empty">Trend appears after two scans.</div></div>
         </div>
       </div>
+      <div style="height:16px"></div>
+
       <div class="card">
-        <div class="card-title">Who AI Recommends Instead</div>
-        <div id="competitor-list"><div class="empty"><p>Competitors will appear after your first scan.</p></div></div>
+        <div class="card-head"><p class="card-title">Opportunity queue</p><p class="card-sub">prompts where no AI names you, by market tier, priority and buying intent</p></div>
+        <div id="ov-opps"><div class="empty">Nothing yet.</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><p class="card-title">Who AI recommends instead</p><button class="btn-link" type="button" data-goto="competitors">See all</button></div>
+          <div id="ov-comps"><div class="empty">Competitors appear after a scan.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><p class="card-title">Where AI gets its answers</p><button class="btn-link" type="button" data-goto="competitors">See all</button></div>
+          <div id="ov-domains"><div class="empty">Sources appear after a scan.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Prompts ===== -->
+  <div class="panel" id="panel-prompts">
+    <div class="row-between" style="margin-bottom:8px">
+      <h2 style="font-size:17px;margin:0">Tracked prompts</h2>
+      <button class="btn btn-primary btn-sm" type="button" id="add-prompt-btn">+ Add prompt</button>
+    </div>
+    <p class="hint">Questions your customers ask AI assistants. Tap one to see what each AI said, who it named, and to edit it.</p>
+    <div class="toolbar">
+      <div class="seg" id="prompt-filter">
+        <button type="button" data-f="all" class="on">All</button>
+        <button type="button" data-f="missing">Not named</button>
+        <button type="button" data-f="visible">Named</button>
+        <button type="button" data-f="inactive">Paused</button>
+      </div>
+      <span class="small muted" id="prompt-count"></span>
+    </div>
+    <div id="new-prompt" class="card" hidden></div>
+    <div id="prompt-list"></div>
+  </div>
+
+  <!-- ===== Competitors ===== -->
+  <div class="panel" id="panel-competitors">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><p class="card-title">Competitors named by AI</p><p class="card-sub">latest full scan</p></div>
+        <div id="comp-list"><div class="empty">Competitors appear after a scan.</div></div>
       </div>
       <div class="card">
-        <div class="card-title">Scan History</div>
-        <div id="history-list"><div class="empty"><p>No scan history yet.</p></div></div>
+        <div class="card-head"><p class="card-title">Most-cited sources</p><p class="card-sub">sites the AI engines read before answering</p></div>
+        <div id="domain-list"><div class="empty">Sources appear after a scan.</div></div>
       </div>
     </div>
   </div>
 
-  <div class="panel" id="panel-scenarios">
-    <div class="row-between">
-      <h2>Client Scenarios</h2>
-      <button class="btn btn-primary btn-sm" type="button" onclick="showAddScenario()">+ Add Scenario</button>
+  <!-- ===== Business ===== -->
+  <div class="panel" id="panel-business">
+    <div class="row-between" style="margin-bottom:12px">
+      <h2 style="font-size:17px;margin:0" id="biz-heading">Entity profile</h2>
+      <button class="btn btn-ghost btn-sm" type="button" id="new-biz-btn">+ Add business</button>
     </div>
-    <p class="hint">Each scenario is a question a potential client might ask an AI assistant. The scanner checks whether you're recommended.</p>
-    <div id="add-scenario-form" class="card" hidden>
-      <div class="form-group"><label for="scenario-label">Scenario label</label><input type="text" id="scenario-label" placeholder="e.g. First-time home buyers"></div>
-      <div class="form-group"><label for="scenario-prompt">Prompt (what a client might ask AI)</label><textarea id="scenario-prompt" placeholder="e.g. I'm a first-time home buyer looking for a realtor in St. Johns County, FL. Who would you recommend?"></textarea></div>
-      <div class="form-group"><label for="scenario-est">Est. monthly inquiries</label><input type="text" id="scenario-est" placeholder="e.g. 8-14"></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary btn-sm" type="button" onclick="saveScenario()">Save</button>
-        <button class="btn btn-ghost btn-sm" type="button" onclick="hideAddScenario()">Cancel</button>
+    <p class="hint">This is how Local Signal recognizes you in AI answers and what it uses when it writes recommendations and content.</p>
+    <form class="card" id="biz-form" autocomplete="off">
+      <div class="form-grid">
+        <p class="section-label">Identity</p>
+        <div class="form-group"><label for="b-name">Business name</label><input type="text" id="b-name" required></div>
+        <div class="form-group"><label for="b-person">Person / expert</label><input type="text" id="b-person"></div>
+        <div class="form-group"><label for="b-title">Role / title</label><input type="text" id="b-title"></div>
+        <div class="form-group"><label for="b-parent">Parent company / brokerage</label><input type="text" id="b-parent"></div>
+        <div class="form-group"><label for="b-website">Website</label><input type="text" id="b-website" inputmode="url" placeholder="example.com"></div>
+        <div class="form-group"><label for="b-location">Location</label><input type="text" id="b-location" placeholder="City or County, ST"></div>
+        <div class="form-group full"><label for="b-aliases">Also known as</label><textarea id="b-aliases" rows="3" placeholder="One per line"></textarea><p class="help">Other names AI might use for you. Each one counts as a mention.</p></div>
+        <p class="section-label">What you do</p>
+        <div class="form-group"><label for="b-services">Services</label><textarea id="b-services" rows="4" placeholder="One per line"></textarea></div>
+        <div class="form-group"><label for="b-specialties">Specialties</label><textarea id="b-specialties" rows="4" placeholder="One per line"></textarea></div>
+        <div class="form-group full"><label for="b-ideal">Ideal customer</label><textarea id="b-ideal" rows="2"></textarea></div>
+        <div class="form-group full"><label for="b-priorities">Revenue-driving priorities</label><textarea id="b-priorities" rows="2"></textarea></div>
+        <div class="form-group full"><label for="b-assoc">Preferred entity associations</label><textarea id="b-assoc" rows="3" placeholder="One per line, e.g. Josh Cotton → Nocatee"></textarea><p class="help">The connections you want AI to make between you, your places and your topics.</p></div>
+        <p class="section-label">Proof</p>
+        <div class="form-group"><label for="b-reviews">Total reviews</label><input type="number" id="b-reviews" min="0" inputmode="numeric"></div>
+        <div class="form-group"><label for="b-credentials">Credentials</label><textarea id="b-credentials" rows="2" placeholder="One per line"></textarea></div>
+        <div class="form-group full"><label for="b-desc">Short description</label><textarea id="b-desc" rows="3"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" type="submit" id="biz-save">Save profile</button><span class="small muted" id="biz-saved"></span></div>
+    </form>
+
+    <div class="card" id="markets-card">
+      <div class="card-head"><p class="card-title">Priority markets</p><p class="card-sub">Tier 1 = most important</p></div>
+      <div id="market-list"></div>
+      <div class="market-row" style="margin-top:8px">
+        <input type="text" id="m-name" placeholder="Add a market, e.g. Nocatee" aria-label="New market name">
+        <select id="m-tier" aria-label="Tier"><option value="1">Tier 1</option><option value="2">Tier 2</option><option value="3" selected>Tier 3</option></select>
+        <button class="btn btn-ghost btn-sm" type="button" id="m-add">Add</button>
       </div>
     </div>
-    <div class="scenario-list" id="scenario-list"></div>
   </div>
 
-  <div class="panel" id="panel-keys">
-    <h2 style="font-size:16px;margin:0 0 4px">API Keys</h2>
-    <p class="hint">Add a key for each AI assistant you want to check. Keys are stored on the server and never shown again after saving.</p>
-    <div class="card" style="padding:12px 16px">
-      <div class="key-row"><span class="key-provider">OpenAI</span><span class="key-status" id="key-status-openai">&mdash;</span><div class="key-input"><input type="password" id="key-openai" placeholder="sk-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('openai')">Save</button></div>
-      <div class="key-row"><span class="key-provider">Google</span><span class="key-status" id="key-status-google">&mdash;</span><div class="key-input"><input type="password" id="key-google" placeholder="AIza..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('google')">Save</button></div>
-      <div class="key-row"><span class="key-provider">Anthropic</span><span class="key-status" id="key-status-anthropic">&mdash;</span><div class="key-input"><input type="password" id="key-anthropic" placeholder="sk-ant-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('anthropic')">Save</button></div>
-      <div class="key-row"><span class="key-provider">Perplexity</span><span class="key-status" id="key-status-perplexity">&mdash;</span><div class="key-input"><input type="password" id="key-perplexity" placeholder="pplx-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" onclick="saveKey('perplexity')">Save</button></div>
-    </div>
-    <p class="hint">OpenAI is also used to read and score every answer, so add it first.</p>
-  </div>
-
+  <!-- ===== Settings ===== -->
   <div class="panel" id="panel-settings">
-    <h2 style="font-size:16px;margin:0 0 16px">Business Profile</h2>
     <div class="card">
-      <div class="form-group"><label for="biz-name">Business name</label><input type="text" id="biz-name" placeholder="e.g. Move Me to Florida Team"></div>
-      <div class="form-group"><label for="biz-location">Location</label><input type="text" id="biz-location" placeholder="e.g. St. Johns County, FL"></div>
-      <div class="form-group"><label for="biz-category">Category</label><select id="biz-category"><option value="real_estate">Real Estate</option><option value="night_nurses">Night Nurses</option><option value="nanny_placement">Nanny Placement</option><option value="estate_staffing">Estate Staffing</option><option value="other">Other</option></select></div>
-      <div class="form-group"><label for="biz-desc">Description</label><textarea id="biz-desc" placeholder="e.g. Josh Cotton is a top-producing realtor..."></textarea></div>
-      <div class="form-group"><label for="biz-keywords">Target keywords (comma-separated)</label><input type="text" id="biz-keywords" placeholder="e.g. realtor, real estate agent, home buying"></div>
-      <button class="btn btn-primary" type="button" onclick="saveBusiness()">Save Business</button>
+      <div class="card-head"><p class="card-title">Automatic scans</p><p class="card-sub" id="sched-next"></p></div>
+      <div class="form-grid">
+        <div class="form-group"><label for="s-active">Status</label><select id="s-active"><option value="on">On</option><option value="off">Paused</option></select></div>
+        <div class="form-group"><label for="s-cadence">How often</label><select id="s-cadence"><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Every 4 weeks</option></select></div>
+        <div class="form-group"><label for="s-day">Day</label><select id="s-day"></select></div>
+        <div class="form-group"><label for="s-hour">Time (Eastern)</label><select id="s-hour"></select></div>
+        <div class="form-group"><label for="s-repeats">Times to ask each AI</label><select id="s-repeats"><option value="1">Once</option><option value="2">Twice (steadier numbers)</option><option value="3">3 times</option></select></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary btn-sm" type="button" id="sched-save">Save schedule</button></div>
+    </div>
+
+    <div class="card" style="padding:12px 18px">
+      <div class="card-head" style="margin:6px 0 4px"><p class="card-title">API keys</p></div>
+      <p class="hint" style="margin-bottom:4px">Keys are stored on the server and never shown again after saving. OpenAI also reads and scores every answer.</p>
+      <div class="key-row"><span class="key-provider">OpenAI</span><span class="key-status" id="key-status-openai">&mdash;</span><div class="key-input"><input type="password" id="key-openai" placeholder="sk-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" data-key="openai">Save</button></div>
+      <div class="key-row"><span class="key-provider">Google</span><span class="key-status" id="key-status-google">&mdash;</span><div class="key-input"><input type="password" id="key-google" placeholder="AIza..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" data-key="google">Save</button></div>
+      <div class="key-row"><span class="key-provider">Anthropic</span><span class="key-status" id="key-status-anthropic">&mdash;</span><div class="key-input"><input type="password" id="key-anthropic" placeholder="sk-ant-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" data-key="anthropic">Save</button></div>
+      <div class="key-row"><span class="key-provider">Perplexity</span><span class="key-status" id="key-status-perplexity">&mdash;</span><div class="key-input"><input type="password" id="key-perplexity" placeholder="pplx-..." autocomplete="off"></div><button class="btn btn-primary btn-sm" type="button" data-key="perplexity">Save</button></div>
     </div>
   </div>
 </div>
@@ -308,28 +443,50 @@ textarea { resize: vertical; min-height: 80px; }
 
 <script>
 var API = 'https://tdosgzlsztliltnepmol.supabase.co/functions/v1/dashboard-api';
-var PASS_KEY = 'ls_passcode';
-var MODEL_NAMES = { chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude', perplexity: 'Perplexity' };
-var passcode = '', unlocked = false, currentBiz = null, pollTimer = null, pollStarted = 0;
+var PASS_KEY = 'ls_passcode', BIZ_KEY = 'ls_biz', TAB_KEY = 'ls_tab';
+var ENGINES = ['chatgpt', 'gemini', 'claude', 'perplexity'];
+var ENGINE_NAMES = { chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude', perplexity: 'Perplexity' };
+var INTENT_NAMES = { hiring: 'Hiring', buyer: 'Buyer', seller: 'Seller', relocation: 'Relocation', area_info: 'Area info', other: 'Other' };
+var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+var state = { passcode: '', unlocked: false, bizId: null, businesses: [], biz: null, markets: [], ov: null, filter: 'all', open: {}, newBiz: false };
+var pollTimer = null, pollStarted = 0;
 
-/* ---------- small helpers ---------- */
+/* ---------- helpers ---------- */
 function $(id) { return document.getElementById(id); }
-function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function toast(msg, ms) { var el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function () { el.classList.remove('show'); }, ms || 3000); }
 function showError(msg) { $('error-text').textContent = msg; $('error-banner').hidden = false; }
 function hideError() { $('error-banner').hidden = true; }
-function cleanMsg(m) { var mm = String(m || '').match(/"error":"((?:[^"\\]|\\.)*)"/); return mm ? mm[1].replace(/\\"/g, '"') : String(m || 'Something went wrong'); }
-function storeGet() { try { return localStorage.getItem(PASS_KEY) || sessionStorage.getItem(PASS_KEY) || ''; } catch (e) { return ''; } }
-function storeSet(p, remember) { try { (remember ? localStorage : sessionStorage).setItem(PASS_KEY, p); } catch (e) {} }
-function storeClear() { try { localStorage.removeItem(PASS_KEY); sessionStorage.removeItem(PASS_KEY); } catch (e) {} }
+function cleanMsg(m) { var mm = String(m || '').match(/"(?:message|error)"\s*:\s*"((?:[^"\\]|\\.)*)"/); return mm ? mm[1].replace(/\\"/g, '"') : String(m || 'Something went wrong'); }
+function sget(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function sset(k, v, remember) { try { (remember === false ? sessionStorage : localStorage).setItem(k, v); } catch (e) {} }
+function sdel(k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) {} }
+function lines(v) { return String(v || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
+function pct(n) { return n == null || isNaN(Number(n)) ? '—' : Math.round(Number(n)) + '%'; }
+function fmtDate(d, withTime) {
+  var dt = new Date(d); if (isNaN(dt)) return '';
+  var s = dt.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return withTime ? s + ', ' + dt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : s;
+}
+function hostOf(url, title) {
+  var h = String(url || '').replace(/^https?:\/\//, '').replace(/^www\./, '').split(/[/?#]/)[0].toLowerCase();
+  if (/vertexaisearch|googleusercontent/.test(h) && title) return String(title).toLowerCase().replace(/^www\./, '');
+  return h;
+}
+function engineDots(visible) {
+  var v = visible || [];
+  return '<span class="dots" aria-label="Named by: ' + (v.length ? v.map(function (e) { return ENGINE_NAMES[e] || e; }).join(', ') : 'none') + '">' +
+    ENGINES.map(function (e) { return '<span class="dot ' + e + (v.indexOf(e) >= 0 ? '' : ' off') + '" title="' + ENGINE_NAMES[e] + '"></span>'; }).join('') + '</span>';
+}
+function tierChip(m) { return m ? '<span class="chip t' + m.tier + '">' + esc(m.name) + ' · T' + m.tier + '</span>' : ''; }
 
 function AuthError() { this.message = 'locked'; }
 AuthError.prototype = Object.create(Error.prototype);
 
 async function api(action, params, body) {
   var url = API + '?action=' + encodeURIComponent(action);
-  if (params) Object.keys(params).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(params[k]); });
-  var opts = { headers: { 'Content-Type': 'application/json', 'x-passcode': passcode } };
+  if (params) Object.keys(params).forEach(function (k) { if (params[k] != null) url += '&' + k + '=' + encodeURIComponent(params[k]); });
+  var opts = { headers: { 'Content-Type': 'application/json', 'x-passcode': state.passcode } };
   if (body) { opts.method = 'POST'; opts.body = JSON.stringify(body); }
   var resp;
   try { resp = await fetch(url, opts); }
@@ -337,14 +494,15 @@ async function api(action, params, body) {
   var j = {};
   try { j = await resp.json(); } catch (e) {}
   if (resp.status === 401) {
-    lock(unlocked ? 'Your passcode was changed. Enter the new one.' : "That passcode didn't work. Try again.");
+    lock(state.unlocked ? 'Your passcode was changed. Enter the new one.' : "That passcode didn't work. Try again.");
     throw new AuthError();
   }
   if (!resp.ok || j.error) throw new Error(cleanMsg(j.error || ('Server error ' + resp.status)));
   return j;
 }
+function fail(prefix) { return function (e) { if (!(e instanceof AuthError)) toast(prefix + e.message, 6000); }; }
 
-/* ---------- passcode gate ---------- */
+/* ---------- gate ---------- */
 function showGate(msg) {
   $('app').hidden = true; $('gate').hidden = false;
   $('gate-error').textContent = msg || '';
@@ -352,8 +510,8 @@ function showGate(msg) {
   setTimeout(function () { try { $('gate-input').focus(); } catch (e) {} }, 50);
 }
 function lock(msg) {
-  storeClear(); passcode = ''; unlocked = false;
-  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  sdel(PASS_KEY); state.passcode = ''; state.unlocked = false;
+  stopPolling();
   showGate(msg);
 }
 $('gate-form').addEventListener('submit', async function (e) {
@@ -361,252 +519,493 @@ $('gate-form').addEventListener('submit', async function (e) {
   var p = $('gate-input').value.trim();
   if (!p) return;
   var btn = $('gate-btn');
-  btn.disabled = true; btn.textContent = 'Checking...'; $('gate-error').textContent = '';
-  passcode = p;
+  btn.disabled = true; btn.textContent = 'Checking…'; $('gate-error').textContent = '';
+  state.passcode = p;
   try {
     await api('verify');
-    storeSet(p, $('gate-remember').checked);
+    sset(PASS_KEY, p, $('gate-remember').checked);
     openApp();
   } catch (err) {
     if (!(err instanceof AuthError)) $('gate-error').textContent = err.message;
-  } finally {
-    btn.disabled = false; btn.textContent = 'Unlock';
-  }
+  } finally { btn.disabled = false; btn.textContent = 'Unlock'; }
 });
 $('lock-btn').addEventListener('click', function () { lock('Locked. Enter your passcode to open the dashboard.'); });
+$('error-close').addEventListener('click', hideError);
 
 /* ---------- tabs ---------- */
-document.querySelectorAll('.tab').forEach(function (t) {
-  t.addEventListener('click', function () {
-    document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('active'); });
-    document.querySelectorAll('.panel').forEach(function (x) { x.classList.remove('active'); });
-    t.classList.add('active');
-    $('panel-' + t.dataset.tab).classList.add('active');
-    try { localStorage.setItem('ls_tab', t.dataset.tab); } catch (e) {}
+function showTab(name) {
+  var t = document.querySelector('.tab[data-tab="' + name + '"]'); if (!t) return;
+  document.querySelectorAll('.tab').forEach(function (x) { x.classList.toggle('active', x === t); x.setAttribute('aria-selected', x === t ? 'true' : 'false'); });
+  document.querySelectorAll('.panel').forEach(function (x) { x.classList.toggle('active', x.id === 'panel-' + name); });
+  sset(TAB_KEY, name);
+  if (name === 'overview' && state.ov) renderTrend(state.ov.trend || []);
+}
+var resizeT = null;
+window.addEventListener('resize', function () { clearTimeout(resizeT); resizeT = setTimeout(function () { if (state.ov) renderTrend(state.ov.trend || []); }, 200); });
+document.querySelectorAll('.tab').forEach(function (t) { t.addEventListener('click', function () { showTab(t.dataset.tab); }); });
+document.querySelectorAll('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.dataset.goto); window.scrollTo(0, 0); }); });
+
+/* ---------- businesses ---------- */
+async function loadBusinesses() {
+  var r = await api('list_businesses');
+  state.businesses = r.data || [];
+  var saved = sget(BIZ_KEY);
+  var pick = state.businesses.filter(function (b) { return b.id === saved; })[0] || state.businesses[0];
+  state.bizId = pick ? pick.id : null;
+  var sel = $('biz-switch');
+  sel.innerHTML = state.businesses.map(function (b) { return '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>'; }).join('');
+  sel.hidden = state.businesses.length < 2;
+  if (state.bizId) sel.value = state.bizId;
+}
+$('biz-switch').addEventListener('change', function () {
+  state.bizId = this.value; sset(BIZ_KEY, state.bizId); state.open = {};
+  stopPolling(); loadAll();
+});
+
+async function loadAll() {
+  hideError();
+  if (!state.bizId) { renderNoBusiness(); return; }
+  var res = await Promise.all([api('load_business', { id: state.bizId }), api('load_overview', { business_id: state.bizId }), api('load_keys')]);
+  state.biz = res[0].data; state.markets = res[0].markets || [];
+  state.ov = res[1];
+  renderBusiness(); renderMarkets(); renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderKeys(res[2].data || []);
+  if (state.ov.running && !pollTimer) startPolling(state.ov.running.id, true);
+}
+function renderNoBusiness() {
+  $('ov-empty').hidden = false; $('ov-main').hidden = true;
+  state.biz = null; state.newBiz = true; state.markets = [];
+  renderBusiness(); renderMarkets();
+  $('prompt-list').innerHTML = '<div class="empty">Add your business first.</div>';
+}
+
+/* ---------- overview ---------- */
+function renderOverview() {
+  var ov = state.ov || {}, latest = ov.latest, prev = ov.previous, cov = ov.coverage || {};
+  $('ov-empty').hidden = true; $('ov-main').hidden = false;
+  $('ov-title').textContent = (ov.business && ov.business.name) || '—';
+  var s = ov.schedule;
+  $('ov-next').textContent = s && s.is_active && s.next_run_at ? 'Next automatic scan ' + fmtDate(s.next_run_at, true) : 'Automatic scans off';
+
+  if (latest) {
+    var d = prev && prev.visibility_score != null ? Number(latest.visibility_score) - Number(prev.visibility_score) : null;
+    $('kpi-score').innerHTML = esc(pct(latest.visibility_score));
+    $('kpi-score-foot').innerHTML = d == null ? (latest.visible_checks + ' of ' + latest.ok_checks + ' answers name you')
+      : '<span class="' + (d > 0 ? 'delta-up' : d < 0 ? 'delta-down' : '') + '">' + (d > 0 ? '+' : '') + Math.round(d) + ' pts</span> vs previous scan';
+    $('kpi-cov').innerHTML = esc(cov.prompts_visible) + '<small> / ' + esc(cov.prompts_scanned) + '</small>';
+    $('kpi-checks').innerHTML = esc(latest.ok_checks) + (Number(latest.error_checks) ? '<small> +' + esc(latest.error_checks) + ' failed</small>' : '');
+    $('kpi-checks-foot').textContent = fmtDate(latest.scan_date, true) + ' · ' + (latest.repeats > 1 ? 'each AI asked ' + latest.repeats + '×' : 'live answers checked');
+  } else {
+    $('kpi-score').textContent = '—'; $('kpi-cov').textContent = '—'; $('kpi-checks').textContent = '—';
+    $('kpi-score-foot').textContent = 'run your first scan';
+  }
+  $('kpi-content').innerHTML = esc(cov.with_owned_content || 0) + '<small> / ' + esc(cov.prompts_active || 0) + '</small>';
+
+  // engines
+  var eng = ov.engines || [];
+  $('ov-engines').innerHTML = eng.length ? ENGINES.map(function (e) {
+    var r = eng.filter(function (x) { return x.engine === e; })[0];
+    if (!r) return '';
+    var share = Number(r.share) || 0, errs = Number(r.error_checks) || 0;
+    return '<div class="engine-row"><span class="engine-name"><span class="dot ' + e + '"></span>' + ENGINE_NAMES[e] + '</span>' +
+      '<div><div class="bar ' + e + '"><span style="width:' + Math.max(0, Math.min(100, share)) + '%"></span></div>' + (errs ? '<span class="engine-err">' + errs + ' failed</span>' : '') + '</div>' +
+      '<span class="engine-val">' + r.visible_checks + '/' + r.ok_checks + '</span></div>';
+  }).join('') : '<div class="empty">No scans yet.</div>';
+
+  renderTrend(ov.trend || []);
+
+  // opportunity queue
+  var opps = (ov.prompts || []).filter(function (p) { return p.is_active && (!p.latest || !Number(p.latest.visible_checks)); });
+  opps.sort(function (a, b) {
+    var ta = a.market ? a.market.tier : 9, tb = b.market ? b.market.tier : 9;
+    if (ta !== tb) return ta - tb;
+    var pa = a.priority || 9, pb = b.priority || 9;
+    if (pa !== pb) return pa - pb;
+    return (b.commercial_intent || 0) - (a.commercial_intent || 0);
+  });
+  $('ov-opps').innerHTML = opps.length ? opps.slice(0, 6).map(function (p, i) {
+    return '<div class="list-row"><span class="rank">' + (i + 1) + '</span><div class="grow"><div class="name">' + esc(p.prompt) + '</div><div class="chips">' +
+      tierChip(p.market) + (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') +
+      (p.commercial_intent ? '<span class="chip">Intent ' + p.commercial_intent + '/5</span>' : '') +
+      (p.has_owned_content ? '<span class="chip ok">Has page</span>' : '<span class="chip warn">No page yet</span>') + '</div></div>' +
+      '<button class="btn-link" type="button" data-open-prompt="' + esc(p.id) + '">Open</button></div>';
+  }).join('') + (opps.length > 6 ? '<p class="small muted" style="margin:10px 0 0">+' + (opps.length - 6) + ' more on the Prompts tab</p>' : '')
+    : '<div class="empty">' + (latest ? 'Every tracked prompt names you in at least one AI. 🎉' : 'Run a scan to find your gaps.') + '</div>';
+  bindOpenPrompt($('ov-opps'));
+
+  var comps = ov.competitors || [], doms = ov.domains || [];
+  $('ov-comps').innerHTML = comps.length ? comps.slice(0, 6).map(compRow).join('') : '<div class="empty">Competitors appear after a scan.</div>';
+  $('ov-domains').innerHTML = doms.length ? doms.slice(0, 6).map(domRow).join('') : '<div class="empty">Sources appear after a scan.</div>';
+}
+
+function compRow(c, i) {
+  return '<div class="list-row"><span class="rank">' + (i + 1) + '</span><div class="grow"><div class="name">' + esc(c.name) + '</div><div class="meta">' +
+    c.prompts + ' prompt' + (Number(c.prompts) === 1 ? '' : 's') + ' · ' + engineDots(c.engines) + '</div></div><span class="count">' + c.mentions + '×</span></div>';
+}
+function domRow(d, i) {
+  return '<div class="list-row"><span class="rank">' + (i + 1) + '</span><div class="grow"><div class="name">' + esc(d.domain) + (d.own ? '<span class="own-tag">You</span>' : '') + '</div><div class="meta">' +
+    d.prompts + ' prompt' + (Number(d.prompts) === 1 ? '' : 's') + ' · ' + engineDots(d.engines) + '</div></div><span class="count">' + d.citations + '×</span></div>';
+}
+
+function renderTrend(points) {
+  var pts = points.filter(function (p) { return p.score != null; });
+  $('trend-sub').textContent = pts.length ? pts.length + ' full scan' + (pts.length === 1 ? '' : 's') : '';
+  if (pts.length < 2) { $('ov-trend').innerHTML = '<div class="empty">The trend line appears after your second full scan.</div>'; return; }
+  var W = Math.max(260, Math.round(($('ov-trend').clientWidth || 600))), H = 180, L = 36, R = 8, T = 10, B = 24;
+  var max = Math.max(20, Math.ceil(Math.max.apply(null, pts.map(function (p) { return Number(p.score); })) / 10) * 10);
+  var x = function (i) { return L + (W - L - R) * (pts.length === 1 ? 0.5 : i / (pts.length - 1)); };
+  var y = function (v) { return T + (H - T - B) * (1 - Number(v) / max); };
+  var grid = '', ticks = [0, max / 2, max];
+  ticks.forEach(function (t) { grid += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t) + '" y2="' + y(t) + '"/><text x="' + (L - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + Math.round(t) + '%</text>'; });
+  var path = pts.map(function (p, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.score).toFixed(1); }).join(' ');
+  var area = path + ' L' + x(pts.length - 1).toFixed(1) + ' ' + y(0) + ' L' + x(0).toFixed(1) + ' ' + y(0) + ' Z';
+  var step = Math.ceil(pts.length / 6), xl = '';
+  pts.forEach(function (p, i) {
+    if (!(i % step === 0 || i === pts.length - 1)) return;
+    if (i !== pts.length - 1 && pts.length - 1 - i < step / 2) return; // keep labels from colliding with the last one
+    var anchor = i === 0 ? 'start' : i === pts.length - 1 ? 'end' : 'middle';
+    xl += '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="' + anchor + '">' + esc(fmtDate(p.date)) + '</text>';
+  });
+  var dots = pts.map(function (p, i) { return '<circle class="pt" r="3.5" cx="' + x(i) + '" cy="' + y(p.score) + '"><title>' + esc(fmtDate(p.date, true)) + ': ' + Math.round(p.score) + '% · ' + p.covered + '/' + p.total + ' prompts</title></circle>'; }).join('');
+  $('ov-trend').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Visibility score by scan"><g class="grid">' + grid + '</g><path class="area" d="' + area + '"/><path class="line" d="' + path + '"/>' + dots + '<g class="xl">' + xl + '</g></svg>';
+}
+
+/* ---------- prompts ---------- */
+function promptVisible(p) { return p.latest && Number(p.latest.visible_checks) > 0; }
+function renderPrompts() {
+  var all = (state.ov && state.ov.prompts) || [];
+  var f = state.filter;
+  var list = all.filter(function (p) {
+    if (f === 'inactive') return !p.is_active;
+    if (!p.is_active) return f === 'all';
+    if (f === 'visible') return promptVisible(p);
+    if (f === 'missing') return !promptVisible(p);
+    return true;
+  });
+  list.sort(function (a, b) {
+    if (a.is_active !== b.is_active) return a.is_active ? -1 : 1;
+    var ta = a.market ? a.market.tier : 9, tb = b.market ? b.market.tier : 9;
+    return ta - tb || (a.priority || 9) - (b.priority || 9);
+  });
+  $('prompt-count').textContent = list.length + ' of ' + all.length;
+  $('prompt-list').innerHTML = list.length ? list.map(promptCard).join('') : '<div class="empty">No prompts here.</div>';
+  list.forEach(function (p) { if (state.open[p.id]) openPromptBody(p.id); });
+  document.querySelectorAll('#prompt-list .prompt-head').forEach(function (h) {
+    h.addEventListener('click', function () { togglePrompt(h.dataset.id); });
+  });
+}
+function promptCard(p) {
+  var l = p.latest, vis = l ? Number(l.visible_checks) : 0;
+  var status = !l ? '<span class="chip">Not scanned</span>' : vis ? '<span class="chip ok">Named</span>' : '<span class="chip no">Not named</span>';
+  return '<div class="prompt' + (p.is_active ? '' : ' inactive') + '" id="p-' + esc(p.id) + '">' +
+    '<button class="prompt-head" type="button" data-id="' + esc(p.id) + '" aria-expanded="' + (state.open[p.id] ? 'true' : 'false') + '">' +
+      '<div class="grow"><div class="prompt-q">' + esc(p.prompt) + '</div><div class="chips">' + tierChip(p.market) +
+        (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') +
+        (p.audience ? '<span class="chip">' + esc(p.audience === 'both' ? 'Buyers & sellers' : p.audience === 'buyer' ? 'Buyers' : 'Sellers') + '</span>' : '') +
+        (p.has_owned_content ? '<span class="chip ok">Has page</span>' : '') + (p.is_active ? '' : '<span class="chip">Paused</span>') + '</div></div>' +
+      '<div class="prompt-score">' + status + (l ? '<span class="mono">' + vis + '/' + l.ok_checks + '</span>' + engineDots(l.engines_visible) : '') + '</div>' +
+    '</button><div class="prompt-body" hidden></div></div>';
+}
+function togglePrompt(id) {
+  state.open[id] = !state.open[id];
+  var card = $('p-' + id); if (!card) return;
+  card.querySelector('.prompt-head').setAttribute('aria-expanded', state.open[id] ? 'true' : 'false');
+  if (state.open[id]) openPromptBody(id); else card.querySelector('.prompt-body').hidden = true;
+}
+function bindOpenPrompt(root) {
+  root.querySelectorAll('[data-open-prompt]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.dataset.openPrompt;
+      state.filter = 'all'; setFilterUi(); state.open[id] = true; renderPrompts(); showTab('prompts');
+      var el = $('p-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+function marketOptions(sel) {
+  return '<option value="">None</option>' + state.markets.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === sel ? ' selected' : '') + '>' + esc(m.name) + ' (Tier ' + m.tier + ')</option>'; }).join('');
+}
+function opt(v, label, sel) { return '<option value="' + esc(v) + '"' + (String(v) === String(sel == null ? '' : sel) ? ' selected' : '') + '>' + esc(label) + '</option>'; }
+function promptForm(p, isNew) {
+  p = p || {};
+  var k = isNew ? 'new' : p.id;
+  return '<div class="form-grid" data-form="' + esc(k) + '">' +
+    '<div class="form-group full"><label>Prompt (what a customer asks AI)</label><textarea data-f="prompt" rows="3">' + esc(p.prompt || '') + '</textarea></div>' +
+    '<div class="form-group"><label>Short label</label><input type="text" data-f="label" value="' + esc(p.label || '') + '"></div>' +
+    '<div class="form-group"><label>Market</label><select data-f="market_id">' + marketOptions(p.market_id) + '</select></div>' +
+    '<div class="form-group"><label>Intent</label><select data-f="intent">' + Object.keys(INTENT_NAMES).map(function (i) { return opt(i, INTENT_NAMES[i], p.intent || 'other'); }).join('') + '</select></div>' +
+    '<div class="form-group"><label>Audience</label><select data-f="audience">' + opt('', '—', p.audience) + opt('buyer', 'Buyers', p.audience) + opt('seller', 'Sellers', p.audience) + opt('both', 'Both', p.audience) + '</select></div>' +
+    '<div class="form-group"><label>Priority</label><select data-f="priority">' + opt('1', 'High', p.priority) + opt('2', 'Medium', p.priority || 2) + opt('3', 'Low', p.priority) + '</select></div>' +
+    '<div class="form-group"><label>Buying intent (1–5)</label><select data-f="commercial_intent">' + [1, 2, 3, 4, 5].map(function (n) { return opt(n, n + (n === 5 ? ' (ready to hire)' : n === 1 ? ' (just curious)' : ''), p.commercial_intent || 3); }).join('') + '</select></div>' +
+    '<div class="form-group full"><label>Your page that answers this</label><input type="text" inputmode="url" data-f="owned_content_url" value="' + esc(p.owned_content_url || '') + '" placeholder="https://welcomehome904.com/..."><p class="help">Leave blank if you don\'t have one yet. This drives content coverage.</p></div>' +
+  '</div>';
+}
+function readForm(root) {
+  var o = {};
+  root.querySelectorAll('[data-f]').forEach(function (el) { o[el.dataset.f] = el.value; });
+  return o;
+}
+async function openPromptBody(id) {
+  var card = $('p-' + id); if (!card) return;
+  var p = state.ov.prompts.filter(function (x) { return x.id === id; })[0]; if (!p) return;
+  var body = card.querySelector('.prompt-body');
+  body.hidden = false;
+  body.innerHTML = '<div class="answers" data-answers><div class="small muted">Loading answers…</div></div>' +
+    '<details class="edit" style="margin-top:14px"><summary class="btn-link">Edit prompt</summary><div style="margin-top:12px">' + promptForm(p) +
+    '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" data-act="save">Save</button>' +
+    '<button class="btn btn-ghost btn-sm" type="button" data-act="retest">Re-test now</button>' +
+    '<button class="btn btn-ghost btn-sm" type="button" data-act="pause">' + (p.is_active ? 'Pause' : 'Resume') + '</button>' +
+    '<button class="btn btn-ghost btn-sm" type="button" data-act="delete">Delete</button></div></div></details>';
+  body.querySelector('[data-act="save"]').addEventListener('click', function () { savePrompt(id, body); });
+  body.querySelector('[data-act="retest"]').addEventListener('click', function () { runScan([id]); });
+  body.querySelector('[data-act="pause"]').addEventListener('click', function () { setActive(id, !p.is_active); });
+  body.querySelector('[data-act="delete"]').addEventListener('click', function (e) { deletePrompt(e.currentTarget, id); });
+  try {
+    var r = await api('prompt_detail', { scenario_id: id });
+    renderAnswers(body.querySelector('[data-answers]'), r.data || []);
+  } catch (e) { if (!(e instanceof AuthError)) body.querySelector('[data-answers]').innerHTML = '<div class="small" style="color:var(--red)">' + esc(e.message) + '</div>'; }
+}
+function renderAnswers(el, rows) {
+  var seen = {}, latest = [];
+  rows.forEach(function (r) { if (!seen[r.ai_model]) { seen[r.ai_model] = 1; latest.push(r); } });
+  latest.sort(function (a, b) { return ENGINES.indexOf(a.ai_model) - ENGINES.indexOf(b.ai_model); });
+  if (!latest.length) { el.innerHTML = '<div class="small muted">No answers yet. Run a scan or tap Re-test.</div>'; return; }
+  el.innerHTML = '<div class="small muted">Latest answer from each AI</div>' + latest.map(function (r) {
+    var comps = (r.competitors_found || []).map(function (c) { return c && c.name; }).filter(Boolean);
+    var doms = [], dseen = {};
+    (r.sources || []).forEach(function (s) { var h = hostOf(s.url, s.title); if (h && !dseen[h]) { dseen[h] = 1; doms.push(h); } });
+    return '<div class="answer"><div class="answer-head"><span class="dot ' + esc(r.ai_model) + '"></span>' + esc(ENGINE_NAMES[r.ai_model] || r.ai_model) +
+      (r.mentioned ? '<span class="chip ok">Named you' + (r.mention_rank ? ' · #' + r.mention_rank : '') + '</span>' : '<span class="chip no">Not named</span>') +
+      (r.cited_own_site ? '<span class="chip ok">Cited your site</span>' : '') +
+      '<span class="meta">' + esc(fmtDate(r.created_at, true)) + '</span></div>' +
+      (r.mention_context ? '<p>“' + esc(r.mention_context) + '”</p>' : '') +
+      (comps.length ? '<p><span class="muted">Named instead:</span> ' + esc(comps.slice(0, 8).join(', ')) + (comps.length > 8 ? '…' : '') + '</p>' : '') +
+      (doms.length ? '<p><span class="muted">Sources:</span> ' + esc(doms.slice(0, 8).join(', ')) + (doms.length > 8 ? '…' : '') + '</p>' : '') +
+      '<details><summary>Full answer</summary><pre>' + esc(r.raw_response || '') + '</pre></details></div>';
+  }).join('');
+}
+async function savePrompt(id, root) {
+  var f = readForm(root.querySelector('[data-form]'));
+  if (!f.prompt.trim()) { toast('The prompt can\'t be empty'); return; }
+  f.id = id;
+  try { await api('save_scenario', null, f); toast('Prompt saved'); await refreshOverview(); }
+  catch (e) { fail('Could not save: ')(e); }
+}
+async function setActive(id, active) {
+  try { await api('set_scenario_active', { id: id, active: active ? 'true' : 'false' }); toast(active ? 'Prompt resumed' : 'Prompt paused'); await refreshOverview(); }
+  catch (e) { fail('Could not update: ')(e); }
+}
+async function deletePrompt(btn, id) {
+  if (!btn.dataset.armed) {
+    btn.dataset.armed = '1'; btn.textContent = 'Tap again to delete'; btn.style.color = 'var(--red)';
+    setTimeout(function () { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = 'Delete'; btn.style.color = ''; } }, 3500);
+    return;
+  }
+  try { await api('delete_scenario', { id: id }); delete state.open[id]; toast('Prompt deleted'); await refreshOverview(); }
+  catch (e) { fail('Could not delete: ')(e); }
+}
+function setFilterUi() { document.querySelectorAll('#prompt-filter button').forEach(function (b) { b.classList.toggle('on', b.dataset.f === state.filter); }); }
+document.querySelectorAll('#prompt-filter button').forEach(function (b) {
+  b.addEventListener('click', function () { state.filter = b.dataset.f; setFilterUi(); renderPrompts(); });
+});
+$('add-prompt-btn').addEventListener('click', function () {
+  if (!state.bizId) { toast('Add your business first'); showTab('business'); return; }
+  var box = $('new-prompt');
+  box.hidden = false;
+  box.innerHTML = '<p class="card-title" style="margin-bottom:12px">New prompt</p>' + promptForm({ priority: 2, commercial_intent: 3, intent: 'hiring' }, true) +
+    '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" id="np-save">Add prompt</button><button class="btn btn-ghost btn-sm" type="button" id="np-cancel">Cancel</button></div>';
+  box.querySelector('textarea').focus();
+  $('np-cancel').addEventListener('click', function () { box.hidden = true; box.innerHTML = ''; });
+  $('np-save').addEventListener('click', async function () {
+    var f = readForm(box);
+    if (!f.prompt.trim()) { toast('Type the question first'); return; }
+    f.business_id = state.bizId;
+    try { await api('save_scenario', null, f); box.hidden = true; box.innerHTML = ''; toast('Prompt added. It will be checked in the next scan.'); await refreshOverview(); }
+    catch (e) { fail('Could not add: ')(e); }
   });
 });
 
-/* ---------- business ---------- */
-async function loadBusiness() {
-  var r = await api('load_business');
-  if (r.data) {
-    currentBiz = r.data;
-    $('biz-name').value = r.data.name || '';
-    $('biz-location').value = r.data.location || '';
-    $('biz-category').value = r.data.category || 'real_estate';
-    $('biz-desc').value = r.data.description || '';
-    $('biz-keywords').value = (r.data.target_keywords || []).join(', ');
-    $('biz-name-display').textContent = r.data.name;
-    $('no-business').hidden = true; $('has-dashboard').hidden = false;
-  } else {
-    currentBiz = null;
-    $('no-business').hidden = false; $('has-dashboard').hidden = true;
-    renderSetup();
-  }
+async function refreshOverview() {
+  if (!state.bizId) return;
+  state.ov = await api('load_overview', { business_id: state.bizId });
+  renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule();
 }
 
-async function saveBusiness() {
-  var name = $('biz-name').value.trim(), loc = $('biz-location').value.trim();
-  var kw = $('biz-keywords').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
-  if (!name || !loc) { toast('Name and location are required'); return; }
+/* ---------- competitors ---------- */
+function renderCompetitors() {
+  var ov = state.ov || {}, comps = ov.competitors || [], doms = ov.domains || [];
+  $('comp-list').innerHTML = comps.length ? comps.map(compRow).join('') : '<div class="empty">Competitors appear after a scan.</div>';
+  $('domain-list').innerHTML = doms.length ? doms.map(domRow).join('') : '<div class="empty">Sources appear after a scan.</div>';
+}
+
+/* ---------- business profile ---------- */
+var BIZ_FIELDS = { 'b-name': 'name', 'b-person': 'person_name', 'b-title': 'person_title', 'b-parent': 'parent_company', 'b-website': 'website', 'b-location': 'location', 'b-ideal': 'ideal_customer', 'b-priorities': 'priorities', 'b-desc': 'description' };
+var BIZ_LISTS = { 'b-aliases': 'aliases', 'b-services': 'services', 'b-specialties': 'specialties', 'b-assoc': 'entity_associations', 'b-credentials': 'credentials' };
+function renderBusiness() {
+  var b = state.newBiz ? {} : (state.biz || {});
+  $('biz-heading').textContent = state.newBiz ? 'New business' : 'Entity profile';
+  Object.keys(BIZ_FIELDS).forEach(function (id) { $(id).value = b[BIZ_FIELDS[id]] || ''; });
+  Object.keys(BIZ_LISTS).forEach(function (id) { $(id).value = (b[BIZ_LISTS[id]] || []).join('\n'); });
+  $('b-reviews').value = b.review_count == null ? '' : b.review_count;
+  $('biz-save').textContent = state.newBiz ? 'Create business' : 'Save profile';
+  $('markets-card').hidden = state.newBiz;
+  $('biz-saved').textContent = b.updated_at ? 'Last saved ' + fmtDate(b.updated_at, true) : '';
+}
+$('biz-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  var body = {};
+  Object.keys(BIZ_FIELDS).forEach(function (id) { body[BIZ_FIELDS[id]] = $(id).value.trim(); });
+  Object.keys(BIZ_LISTS).forEach(function (id) { body[BIZ_LISTS[id]] = lines($(id).value); });
+  body.review_count = $('b-reviews').value === '' ? null : Number($('b-reviews').value);
+  if (!body.name) { toast('Business name is required'); return; }
+  if (!state.newBiz && state.biz) body.id = state.biz.id;
+  var btn = $('biz-save'); btn.disabled = true;
   try {
-    var r = await api('save_business', null, {
-      id: currentBiz ? currentBiz.id : null, name: name, location: loc,
-      category: $('biz-category').value, description: $('biz-desc').value.trim(), target_keywords: kw
+    var r = await api('save_business', null, body);
+    toast(state.newBiz ? 'Business created' : 'Profile saved');
+    if (state.newBiz && r.data && r.data.id) { state.bizId = r.data.id; sset(BIZ_KEY, state.bizId); }
+    state.newBiz = false;
+    await loadBusinesses(); await loadAll();
+  } catch (err) { fail('Could not save: ')(err); }
+  finally { btn.disabled = false; }
+});
+$('new-biz-btn').addEventListener('click', function () { state.newBiz = true; renderBusiness(); $('b-name').focus(); });
+
+function renderMarkets() {
+  var ms = state.markets.slice().sort(function (a, b) { return a.tier - b.tier || a.name.localeCompare(b.name); });
+  $('market-list').innerHTML = ms.length ? ms.map(function (m) {
+    return '<div class="market-row" data-mid="' + esc(m.id) + '"><span class="name">' + esc(m.name) + '</span>' +
+      '<select aria-label="Tier for ' + esc(m.name) + '" data-tier>' + [1, 2, 3].map(function (t) { return opt(t, 'Tier ' + t, m.tier); }).join('') + '</select>' +
+      '<button class="btn btn-ghost btn-sm" type="button" data-del>Remove</button></div>';
+  }).join('') : '<div class="small muted">No markets yet.</div>';
+  $('market-list').querySelectorAll('.market-row').forEach(function (row) {
+    var id = row.dataset.mid, m = state.markets.filter(function (x) { return x.id === id; })[0];
+    row.querySelector('[data-tier]').addEventListener('change', async function () {
+      try { await api('save_market', null, { id: id, name: m.name, tier: Number(this.value), kind: m.kind }); m.tier = Number(this.value); toast('Tier updated'); renderMarkets(); refreshOverview(); }
+      catch (e) { fail('Could not update: ')(e); }
     });
-    if (!currentBiz) currentBiz = r.data; else { currentBiz.name = name; currentBiz.location = loc; }
-    $('biz-name-display').textContent = name;
-    $('no-business').hidden = true; $('has-dashboard').hidden = false;
-    toast('Business saved');
-  } catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
+    row.querySelector('[data-del]').addEventListener('click', async function (ev) {
+      var b = ev.currentTarget;
+      if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Sure?'; b.style.color = 'var(--red)'; setTimeout(function () { if (b.isConnected) { delete b.dataset.armed; b.textContent = 'Remove'; b.style.color = ''; } }, 3000); return; }
+      try { await api('delete_market', { id: id }); state.markets = state.markets.filter(function (x) { return x.id !== id; }); renderMarkets(); refreshOverview(); }
+      catch (e) { fail('Could not remove: ')(e); }
+    });
+  });
 }
-
-function renderSetup() {
-  $('setup-steps').innerHTML =
-    '<div class="setup-step"><div class="step-num">1</div><div class="step-content"><h3>Add your business</h3><p>Go to the Business tab.</p></div></div>' +
-    '<div class="setup-step"><div class="step-num">2</div><div class="step-content"><h3>Create scenarios</h3><p>Add the client questions you want AI to recommend you for.</p></div></div>' +
-    '<div class="setup-step"><div class="step-num">3</div><div class="step-content"><h3>Add API keys</h3><p>OpenAI first, then any of the others.</p></div></div>' +
-    '<div class="setup-step"><div class="step-num">4</div><div class="step-content"><h3>Run your first scan</h3><p>Tap "Run Scan" on the Dashboard.</p></div></div>';
-}
-
-/* ---------- scenarios ---------- */
-async function loadScenarios() {
-  if (!currentBiz) return;
-  var r = await api('load_scenarios', { business_id: currentBiz.id });
-  var el = $('scenario-list');
-  if (!r.data || r.data.length === 0) { el.innerHTML = '<div class="empty"><p>No scenarios yet.</p></div>'; return; }
-  el.innerHTML = r.data.map(function (s) {
-    return '<div class="scenario-item"><span class="label">' + esc(s.label) + '</span><span class="est">' + esc(s.estimated_monthly_inquiries || '') + '</span>' +
-      '<button class="btn btn-ghost btn-sm" type="button" aria-label="Remove scenario" data-del="' + esc(s.id) + '">&#10005;</button></div>';
-  }).join('');
-  el.querySelectorAll('[data-del]').forEach(function (b) { b.addEventListener('click', function () { deleteScenario(b, b.getAttribute('data-del')); }); });
-}
-function showAddScenario() { $('add-scenario-form').hidden = false; $('scenario-label').focus(); }
-function hideAddScenario() { $('add-scenario-form').hidden = true; }
-
-async function saveScenario() {
-  if (!currentBiz) { toast('Save your business first'); return; }
-  var label = $('scenario-label').value.trim(), prompt = $('scenario-prompt').value.trim(), est = $('scenario-est').value.trim();
-  if (!label || !prompt) { toast('Label and prompt are required'); return; }
+$('m-add').addEventListener('click', async function () {
+  var name = $('m-name').value.trim(); if (!name || !state.bizId) return;
   try {
-    await api('save_scenario', null, { business_id: currentBiz.id, label: label, prompt: prompt, estimated_monthly_inquiries: est || null });
-    $('scenario-label').value = ''; $('scenario-prompt').value = ''; $('scenario-est').value = '';
-    hideAddScenario(); toast('Scenario added'); loadScenarios();
-  } catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
-}
+    var r = await api('save_market', null, { business_id: state.bizId, name: name, tier: Number($('m-tier').value) });
+    state.markets.push(r.data); $('m-name').value = ''; renderMarkets(); toast('Market added');
+  } catch (e) { fail('Could not add: ')(e); }
+});
 
-// Two-tap delete (browser confirm dialogs are unreliable on phones)
-async function deleteScenario(btn, id) {
-  if (!btn.dataset.armed) {
-    btn.dataset.armed = '1'; btn.textContent = 'Remove?'; btn.style.color = 'var(--red)';
-    setTimeout(function () { if (btn.isConnected) { delete btn.dataset.armed; btn.innerHTML = '&#10005;'; btn.style.color = ''; } }, 3000);
-    return;
-  }
-  try { await api('delete_scenario', { id: id }); toast('Scenario removed'); loadScenarios(); }
-  catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
+/* ---------- schedule ---------- */
+(function fillSchedule() {
+  $('s-day').innerHTML = DAYS.map(function (d, i) { return opt(i, d, 1); }).join('');
+  var hrs = '';
+  for (var h = 0; h < 24; h++) hrs += opt(h, (h % 12 || 12) + ':00 ' + (h < 12 ? 'AM' : 'PM'), 6);
+  $('s-hour').innerHTML = hrs;
+})();
+function renderSchedule() {
+  var s = state.ov && state.ov.schedule;
+  $('s-active').value = s && s.is_active === false ? 'off' : 'on';
+  $('s-cadence').value = (s && s.cadence) || 'weekly';
+  $('s-day').value = s ? s.day_of_week : 1;
+  $('s-hour').value = s ? s.hour_local : 6;
+  $('s-repeats').value = s ? s.repeats : 2;
+  $('sched-next').textContent = s && s.is_active && s.next_run_at ? 'Next: ' + fmtDate(s.next_run_at, true) : (s ? 'Paused' : 'Not set up');
 }
+$('sched-save').addEventListener('click', async function () {
+  if (!state.bizId) return;
+  try {
+    await api('save_schedule', null, { business_id: state.bizId, is_active: $('s-active').value === 'on', cadence: $('s-cadence').value,
+      day_of_week: Number($('s-day').value), hour_local: Number($('s-hour').value), repeats: Number($('s-repeats').value), timezone: 'America/New_York' });
+    toast('Schedule saved'); await refreshOverview();
+  } catch (e) { fail('Could not save: ')(e); }
+});
 
 /* ---------- api keys ---------- */
-async function loadKeys() {
-  var r = await api('load_keys');
-  var byP = {}; (r.data || []).forEach(function (k) { byP[k.provider] = k; });
+function renderKeys(rows) {
+  var byP = {}; rows.forEach(function (k) { byP[k.provider] = k; });
   ['openai', 'google', 'anthropic', 'perplexity'].forEach(function (p) {
     var el = $('key-status-' + p);
     if (byP[p] && byP[p].is_active) { el.textContent = 'Saved'; el.className = 'key-status active'; }
     else { el.textContent = 'Missing'; el.className = 'key-status missing'; }
   });
 }
-
-async function saveKey(provider) {
-  var input = $('key-' + provider), val = input.value.trim();
-  if (!val) { toast('Paste a key first'); return; }
-  try {
-    await api('save_key', null, { provider: provider, api_key: val });
-    input.value = '';
-    toast(provider.charAt(0).toUpperCase() + provider.slice(1) + ' key saved'); loadKeys();
-  } catch (e) { if (!(e instanceof AuthError)) toast('Error: ' + e.message, 5000); }
-}
+document.querySelectorAll('[data-key]').forEach(function (b) {
+  b.addEventListener('click', async function () {
+    var p = b.dataset.key, input = $('key-' + p), val = input.value.trim();
+    if (!val) { toast('Paste a key first'); return; }
+    try { await api('save_key', null, { provider: p, api_key: val }); input.value = ''; toast('Key saved'); renderKeys((await api('load_keys')).data || []); }
+    catch (e) { fail('Could not save: ')(e); }
+  });
+});
 
 /* ---------- scans ---------- */
 function setScanUi(running) {
   $('scan-running').hidden = !running;
   var btn = $('run-scan-btn');
-  btn.disabled = running; btn.textContent = running ? 'Scanning...' : 'Run Scan';
+  btn.disabled = running; btn.textContent = running ? 'Scanning…' : 'Run scan';
 }
-
-async function runScan() {
-  if (!currentBiz) { toast('Set up your business first'); return; }
+function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } setScanUi(false); }
+async function runScan(scenarioIds) {
+  if (!state.bizId) { toast('Add your business first'); return; }
   hideError();
-  var btn = $('run-scan-btn');
-  btn.disabled = true; btn.textContent = 'Starting...';
+  var btn = $('run-scan-btn'); btn.disabled = true; btn.textContent = 'Starting…';
   try {
-    var sr = await api('active_scenarios', { business_id: currentBiz.id });
-    if (sr.running) { toast('A scan is already running'); startPolling(sr.running); return; }
-    if (!sr.data || sr.data.length === 0) { toast('Add at least one scenario first'); setScanUi(false); return; }
-    var scanR = await api('run_scan', null, {
-      business_id: currentBiz.id, business_name: currentBiz.name, location: currentBiz.location, scenarios: sr.data
-    });
-    startPolling(scanR.data.id);
+    if (!scenarioIds) {
+      var sr = await api('active_scenarios', { business_id: state.bizId });
+      if (sr.running) { toast('A scan is already running'); startPolling(sr.running); return; }
+      if (!sr.data || !sr.data.length) { toast('Add at least one prompt first'); setScanUi(false); return; }
+    }
+    var r = await api('run_scan', null, { business_id: state.bizId, scenario_ids: scenarioIds || null });
+    toast(scenarioIds ? 'Re-testing this prompt on every AI' : 'Scan started. You can leave this page; it keeps running.', 4000);
+    startPolling(r.data.id);
+    if (scenarioIds) showTab('overview');
   } catch (e) {
     setScanUi(false);
     if (!(e instanceof AuthError)) showError('Scan could not start: ' + e.message);
   }
 }
-
-function startPolling(scanId) {
+$('run-scan-btn').addEventListener('click', function () { runScan(null); });
+function startPolling(scanId, quiet) {
   setScanUi(true);
-  $('scan-status-text').textContent = 'Starting scan...';
+  $('scan-status-text').textContent = quiet ? 'A scan is running…' : 'Starting scan…';
   $('scan-progress-bar').style.width = '0%';
   pollStarted = Date.now();
   if (pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(function () { pollOnce(scanId); }, 2500);
+  pollTimer = setInterval(function () { pollOnce(scanId); }, 4000);
   pollOnce(scanId);
 }
-
 async function pollOnce(scanId) {
   try {
     var r = await api('poll_scan', { scan_id: scanId });
     if (!r.data) return;
     var total = r.data.total_checks || 0, done = r.data.completed_checks || 0;
-    $('scan-progress-bar').style.width = (total ? Math.round(done / total * 100) : 3) + '%';
-    $('scan-status-text').textContent = total ? ('Scanning... ' + done + ' of ' + total + ' checks') : 'Starting scan...';
+    $('scan-progress-bar').style.width = (total ? Math.max(3, Math.round(done / total * 100)) : 3) + '%';
+    $('scan-status-text').textContent = total ? ('Asking the AI engines… ' + done + ' of ' + total + ' answers') : 'Starting scan…';
     if (r.data.status === 'completed' || r.data.status === 'failed') {
-      clearInterval(pollTimer); pollTimer = null; setScanUi(false);
-      if (r.data.status === 'completed') toast('Scan complete');
-      else showError('The scan failed. Check that your OpenAI key is saved on the API Keys tab, then try again.');
-      loadDashboard();
-    } else if (Date.now() - pollStarted > 8 * 60 * 1000) {
-      clearInterval(pollTimer); pollTimer = null; setScanUi(false);
-      showError('The scan is taking longer than expected. Refresh in a few minutes to see results.');
+      stopPolling();
+      if (r.data.status === 'completed') toast('Scan complete'); else showError('The scan failed. ' + (r.data.error || 'Check your API keys on the Settings tab.'));
+      await refreshOverview();
+    } else if (Date.now() - pollStarted > 25 * 60 * 1000) {
+      stopPolling();
+      showError('This scan is taking longer than usual. It keeps running in the background; refresh later to see results.');
     }
   } catch (e) { /* keep polling quietly; auth errors already lock the page */ }
-}
-$('run-scan-btn').addEventListener('click', runScan);
-
-/* ---------- dashboard ---------- */
-async function loadDashboard() {
-  if (!currentBiz) return;
-  var r = await api('load_dashboard', { business_id: currentBiz.id });
-
-  var v = r.visibility;
-  if (v) {
-    var score = Math.round(Number(v.visibility_score) || 0);
-    $('score-num').textContent = score + '%';
-    $('score-of').textContent = (v.mentions || 0) + ' of ' + (v.total_checks || 0) + ' checks';
-    var c = 2 * Math.PI * 58, off = c - (c * score / 100);
-    $('score-arc').setAttribute('stroke-dasharray', c);
-    $('score-arc').setAttribute('stroke-dashoffset', off);
-    $('score-headline').textContent = score === 0 ? 'Not being recommended yet' : score < 30 ? 'Low visibility' : score < 60 ? 'Building momentum' : 'Strong AI presence';
-    $('score-desc').textContent = score === 0 ? "AI assistants aren't naming you in these searches yet." : score < 30 ? 'You show up in some searches. Plenty of room to grow.' : score < 60 ? "You're recommended in a good share of searches." : 'AI assistants name you often.';
-  }
-
-  var mb = r.modelBreakdown || {}, notes = [];
-  $('model-grid').innerHTML = ['chatgpt', 'gemini', 'claude', 'perplexity'].filter(function (m) { return mb[m]; }).map(function (m) {
-    var d = mb[m];
-    var scoreTxt = d.total ? (d.mentioned + '/' + d.total) : '&mdash;';
-    var err = '';
-    if (d.errors) {
-      err = '<span class="model-err">' + (d.total ? d.errors + ' failed' : 'failed') + '</span>';
-      var raw = String(d.lastError || '').replace(/^ERROR:\s*/, '');
-      var mm = raw.match(/"message"\s*:\s*"([^"]+)"/);
-      notes.push(MODEL_NAMES[m] + ': ' + (mm ? mm[1] : raw).slice(0, 140));
-    }
-    return '<div class="model-badge"><div class="model-dot ' + m + '"></div><span class="model-name">' + MODEL_NAMES[m] + '</span>' + err + '<span class="model-score">' + scoreTxt + '</span></div>';
-  }).join('');
-  var note = $('model-note');
-  if (notes.length) { note.hidden = false; note.textContent = "Failed checks aren't counted in your score. Usually this means that account is out of credits or the key is wrong. " + notes.join(' · '); }
-  else note.hidden = true;
-
-  var comps = (r.competitors || []).filter(function (c) { return c.competitor_name; });
-  $('competitor-list').innerHTML = comps.length ? comps.map(function (c, i) {
-    return '<div class="competitor-row"><span class="competitor-rank">' + (i + 1) + '</span><span class="competitor-name">' + esc(c.competitor_name) + '</span><span class="competitor-count">' + c.mention_count + ' mention' + (Number(c.mention_count) !== 1 ? 's' : '') + '</span></div>';
-  }).join('') : '<div class="empty"><p>Competitors will appear after your first scan.</p></div>';
-
-  var hist = r.history || [];
-  $('history-list').innerHTML = hist.length ? hist.map(function (h) {
-    var d = new Date(h.scan_date);
-    return '<div class="history-row"><span class="history-date">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '</span><span class="history-score">' + Math.round(Number(h.visibility_score) || 0) + '%</span><span style="color:var(--fg-muted);font-size:13px">' + (h.mentions || 0) + ' of ' + (h.total_checks || 0) + ' checks</span></div>';
-  }).join('') : '<div class="empty"><p>No scan history yet.</p></div>';
 }
 
 /* ---------- start ---------- */
 async function openApp() {
-  unlocked = true;
+  state.unlocked = true;
   $('gate').hidden = true; $('app').hidden = false; hideError();
-  try {
-    var savedTab; try { savedTab = localStorage.getItem('ls_tab'); } catch (e) {}
-    if (savedTab) { var t = document.querySelector('.tab[data-tab="' + savedTab + '"]'); if (t) t.click(); }
-    await loadBusiness();
-    await Promise.all([loadScenarios(), loadKeys(), loadDashboard()]);
-  } catch (e) {
-    if (!(e instanceof AuthError)) showError("Couldn't load your data: " + e.message);
-  }
+  var saved = sget(TAB_KEY); if (saved) showTab(saved === 'dashboard' ? 'overview' : saved === 'scenarios' ? 'prompts' : saved === 'keys' ? 'settings' : saved);
+  try { await loadBusinesses(); await loadAll(); }
+  catch (e) { if (!(e instanceof AuthError)) showError("Couldn't load your data: " + e.message); }
 }
-
 (function init() {
-  var saved = storeGet();
-  if (saved) { passcode = saved; openApp(); }
-  else showGate('');
+  var saved = sget(PASS_KEY);
+  if (saved) { state.passcode = saved; openApp(); } else showGate('');
 })();
 </script>
 </body>
