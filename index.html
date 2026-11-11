@@ -191,6 +191,9 @@ textarea { resize: vertical; min-height: 76px; }
 .chip.ok { color: var(--green); background: var(--green-dim); border-color: transparent; }
 .chip.no { color: var(--red); background: var(--red-dim); border-color: transparent; }
 .chip.warn { color: var(--orange); background: var(--orange-dim); border-color: transparent; }
+.chip.open { color: var(--accent); background: transparent; border-color: var(--accent); }
+.score { font-family: var(--mono); font-size: 13px; font-weight: 700; min-width: 34px; text-align: center; padding: 3px 0; border-radius: 6px; background: var(--accent-dim); color: var(--accent); flex-shrink: 0; }
+.answer a { color: var(--accent); overflow-wrap: anywhere; }
 
 /* ---------- Prompts ---------- */
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
@@ -304,7 +307,7 @@ textarea { resize: vertical; min-height: 76px; }
       <div class="kpis">
         <div class="kpi"><p class="kpi-label">AI visibility</p><div class="kpi-value" id="kpi-score">&mdash;</div><p class="kpi-foot" id="kpi-score-foot">share of answers that name you</p></div>
         <div class="kpi"><p class="kpi-label">Prompt coverage</p><div class="kpi-value" id="kpi-cov">&mdash;</div><p class="kpi-foot">prompts where any AI names you</p></div>
-        <div class="kpi"><p class="kpi-label">Content coverage</p><div class="kpi-value" id="kpi-content">&mdash;</div><p class="kpi-foot">prompts with a page on your site</p></div>
+        <div class="kpi"><p class="kpi-label">Content coverage</p><div class="kpi-value" id="kpi-content">&mdash;</div><p class="kpi-foot" id="kpi-content-foot">prompts with a page on your site</p></div>
         <div class="kpi"><p class="kpi-label">Last scan</p><div class="kpi-value" id="kpi-checks">&mdash;</div><p class="kpi-foot" id="kpi-checks-foot">live answers checked</p></div>
       </div>
 
@@ -321,7 +324,7 @@ textarea { resize: vertical; min-height: 76px; }
       <div style="height:16px"></div>
 
       <div class="card">
-        <div class="card-head"><p class="card-title">Opportunity queue</p><p class="card-sub">prompts where no AI names you, by market tier, priority and buying intent</p></div>
+        <div class="card-head"><p class="card-title">Opportunity queue</p><p class="card-sub">score = market tier × priority × buying intent × how open the question is</p></div>
         <div id="ov-opps"><div class="empty">Nothing yet.</div></div>
       </div>
 
@@ -350,6 +353,7 @@ textarea { resize: vertical; min-height: 76px; }
         <button type="button" data-f="all" class="on">All</button>
         <button type="button" data-f="missing">Not named</button>
         <button type="button" data-f="visible">Named</button>
+        <button type="button" data-f="open">Open</button>
         <button type="button" data-f="inactive">Paused</button>
       </div>
       <span class="small muted" id="prompt-count"></span>
@@ -402,6 +406,17 @@ textarea { resize: vertical; min-height: 76px; }
       </div>
       <div class="form-actions"><button class="btn btn-primary" type="submit" id="biz-save">Save profile</button><span class="small muted" id="biz-saved"></span></div>
     </form>
+
+    <div class="card" id="site-card">
+      <div class="card-head"><p class="card-title">Your website</p><p class="card-sub" id="site-sub"></p></div>
+      <p class="hint" style="margin-bottom:12px">Local Signal reads your posts and pages and matches them to each prompt, so you can see which questions you already answer and which still need a page.</p>
+      <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <div class="kpi"><p class="kpi-label">Pages read</p><div class="kpi-value" id="site-pages">0</div></div>
+        <div class="kpi"><p class="kpi-label">Blog posts</p><div class="kpi-value" id="site-blog">0</div></div>
+        <div class="kpi"><p class="kpi-label">With schema</p><div class="kpi-value" id="site-schema">0</div><p class="kpi-foot">markup AI reads</p></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-ghost btn-sm" type="button" id="site-btn">Check my site now</button><span class="small muted" id="site-status"></span></div>
+    </div>
 
     <div class="card" id="markets-card">
       <div class="card-head"><p class="card-title">Priority markets</p><p class="card-sub">Tier 1 = most important</p></div>
@@ -519,6 +534,7 @@ function showGate(msg) {
 function lock(msg) {
   sdel(PASS_KEY); state.passcode = ''; state.unlocked = false;
   stopPolling();
+  if (sitePoll) { clearInterval(sitePoll); sitePoll = null; }
   showGate(msg);
 }
 $('gate-form').addEventListener('submit', async function (e) {
@@ -575,7 +591,7 @@ async function loadAll() {
   var res = await Promise.all([api('load_business', { id: state.bizId }), api('load_overview', { business_id: state.bizId }), api('load_keys')]);
   state.biz = res[0].data; state.markets = res[0].markets || [];
   state.ov = res[1];
-  renderBusiness(); renderMarkets(); renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderKeys(res[2].data || []);
+  renderBusiness(); renderMarkets(); renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderKeys(res[2].data || []); renderSite();
   if (state.ov.running && !pollTimer) startPolling(state.ov.running.id, true);
 }
 function renderNoBusiness() {
@@ -606,6 +622,7 @@ function renderOverview() {
     $('kpi-score-foot').textContent = 'run your first scan';
   }
   $('kpi-content').innerHTML = esc(cov.with_owned_content || 0) + '<small> / ' + esc(cov.prompts_active || 0) + '</small>';
+  $('kpi-content-foot').textContent = (cov.with_partial_content ? cov.with_partial_content + ' more have a page that needs work' : 'prompts with a page on your site');
 
   // engines
   var eng = ov.engines || [];
@@ -620,20 +637,14 @@ function renderOverview() {
 
   renderTrend(ov.trend || []);
 
-  // opportunity queue
-  var opps = (ov.prompts || []).filter(function (p) { return p.is_active && (!p.latest || !Number(p.latest.visible_checks)); });
+  // opportunity queue: highest-value prompts where AI doesn't name you yet
+  var opps = (ov.prompts || []).filter(function (p) { return p.is_active && p.status !== 'named'; });
   opps.sort(function (a, b) {
-    var ta = a.market ? a.market.tier : 9, tb = b.market ? b.market.tier : 9;
-    if (ta !== tb) return ta - tb;
-    var pa = a.priority || 9, pb = b.priority || 9;
-    if (pa !== pb) return pa - pb;
-    return (b.commercial_intent || 0) - (a.commercial_intent || 0);
+    return (b.opportunity || 0) - (a.opportunity || 0) || (a.market ? a.market.tier : 9) - (b.market ? b.market.tier : 9);
   });
-  $('ov-opps').innerHTML = opps.length ? opps.slice(0, 6).map(function (p, i) {
-    return '<div class="list-row"><span class="rank">' + (i + 1) + '</span><div class="grow"><div class="name">' + esc(p.prompt) + '</div><div class="chips">' +
-      tierChip(p.market) + (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') +
-      (p.commercial_intent ? '<span class="chip">Intent ' + p.commercial_intent + '/5</span>' : '') +
-      (p.has_owned_content ? '<span class="chip ok">Has page</span>' : '<span class="chip warn">No page yet</span>') + '</div></div>' +
+  $('ov-opps').innerHTML = opps.length ? opps.slice(0, 6).map(function (p) {
+    return '<div class="list-row"><span class="score" title="Opportunity score (0–100)">' + esc(p.opportunity == null ? '–' : p.opportunity) + '</span><div class="grow"><div class="name">' + esc(p.prompt) + '</div><div class="chips">' +
+      statusChip(p) + tierChip(p.market) + (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') + contentChip(p) + '</div></div>' +
       '<button class="btn-link" type="button" data-open-prompt="' + esc(p.id) + '">Open</button></div>';
   }).join('') + (opps.length > 6 ? '<p class="small muted" style="margin:10px 0 0">+' + (opps.length - 6) + ' more on the Prompts tab</p>' : '')
     : '<div class="empty">' + (latest ? 'Every tracked prompt names you in at least one AI. 🎉' : 'Run a scan to find your gaps.') + '</div>';
@@ -644,6 +655,22 @@ function renderOverview() {
   $('ov-domains').innerHTML = doms.length ? doms.slice(0, 6).map(domRow).join('') : '<div class="empty">Sources appear after a scan.</div>';
 }
 
+function statusChip(p) {
+  var l = p.latest || {};
+  switch (p.status) {
+    case 'named': return '<span class="chip ok">Named</span>';
+    case 'open': return '<span class="chip open">AI names nobody</span>';
+    case 'partly_open': return '<span class="chip open">' + esc(l.open_checks) + ' of ' + esc(l.ok_checks) + ' AIs name nobody</span>';
+    case 'contested': return '<span class="chip no">Others named</span>';
+    default: return '<span class="chip">Not scanned</span>';
+  }
+}
+function contentChip(p) {
+  var c = p.content || {};
+  if (c.state === 'manual' || c.state === 'answers') return '<span class="chip ok">Has page</span>';
+  if (c.state === 'partial') return '<span class="chip warn">Page needs work</span>';
+  return '<span class="chip">No page yet</span>';
+}
 function compRow(c, i) {
   return '<div class="list-row"><span class="rank">' + (i + 1) + '</span><div class="grow"><div class="name">' + esc(c.name) + '</div><div class="meta">' +
     c.prompts + ' prompt' + (Number(c.prompts) === 1 ? '' : 's') + ' · ' + engineDots(c.engines) + '</div></div><span class="count">' + c.mentions + '×</span></div>';
@@ -686,6 +713,7 @@ function renderPrompts() {
     if (!p.is_active) return f === 'all';
     if (f === 'visible') return promptVisible(p);
     if (f === 'missing') return !promptVisible(p);
+    if (f === 'open') return p.status === 'open' || p.status === 'partly_open';
     return true;
   });
   list.sort(function (a, b) {
@@ -702,13 +730,13 @@ function renderPrompts() {
 }
 function promptCard(p) {
   var l = p.latest, vis = l ? Number(l.visible_checks) : 0;
-  var status = !l ? '<span class="chip">Not scanned</span>' : vis ? '<span class="chip ok">Named</span>' : '<span class="chip no">Not named</span>';
+  var status = statusChip(p);
   return '<div class="prompt' + (p.is_active ? '' : ' inactive') + '" id="p-' + esc(p.id) + '">' +
     '<button class="prompt-head" type="button" data-id="' + esc(p.id) + '" aria-expanded="' + (state.open[p.id] ? 'true' : 'false') + '">' +
       '<div class="grow"><div class="prompt-q">' + esc(p.prompt) + '</div><div class="chips">' + tierChip(p.market) +
         (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') +
         (p.audience ? '<span class="chip">' + esc(p.audience === 'both' ? 'Buyers & sellers' : p.audience === 'buyer' ? 'Buyers' : 'Sellers') + '</span>' : '') +
-        (p.has_owned_content ? '<span class="chip ok">Has page</span>' : '') + (p.is_active ? '' : '<span class="chip">Paused</span>') + '</div></div>' +
+        contentChip(p) + (p.is_active ? '' : '<span class="chip">Paused</span>') + (p.source === 'pickedbygpt' ? '<span class="chip">From Picked By GPT</span>' : '') + '</div></div>' +
       '<div class="prompt-score">' + status + (l ? '<span class="mono">' + vis + '/' + l.ok_checks + '</span>' + engineDots(l.engines_visible) : '') + '</div>' +
     '</button><div class="prompt-body" hidden></div></div>';
 }
@@ -755,7 +783,7 @@ async function openPromptBody(id) {
   var p = state.ov.prompts.filter(function (x) { return x.id === id; })[0]; if (!p) return;
   var body = card.querySelector('.prompt-body');
   body.hidden = false;
-  body.innerHTML = '<div class="answers" data-answers><div class="small muted">Loading answers…</div></div>' +
+  body.innerHTML = '<div class="answers" data-pages></div><div class="answers" data-answers><div class="small muted">Loading answers…</div></div>' +
     '<details class="edit" style="margin-top:14px"><summary class="btn-link">Edit prompt</summary><div style="margin-top:12px">' + promptForm(p) +
     '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" data-act="save">Save</button>' +
     '<button class="btn btn-ghost btn-sm" type="button" data-act="retest">Re-test now</button>' +
@@ -767,8 +795,23 @@ async function openPromptBody(id) {
   body.querySelector('[data-act="delete"]').addEventListener('click', function (e) { deletePrompt(e.currentTarget, id); });
   try {
     var r = await api('prompt_detail', { scenario_id: id });
+    renderPages(body.querySelector('[data-pages]'), r.pages || [], p);
     renderAnswers(body.querySelector('[data-answers]'), r.data || []);
   } catch (e) { if (!(e instanceof AuthError)) body.querySelector('[data-answers]').innerHTML = '<div class="small" style="color:var(--red)">' + esc(e.message) + '</div>'; }
+}
+function renderPages(el, pages, p) {
+  var site = (state.ov && state.ov.site) || {};
+  var manual = p.content && p.content.state === 'manual' ? '<p class="small" style="margin:0">Your page: <a href="' + esc(p.content.url) + '" target="_blank" rel="noopener">' + esc(p.content.url) + '</a></p>' : '';
+  if (!pages.length) {
+    el.innerHTML = manual || '<div class="small muted">' + (site.pages_read ? 'None of your ' + site.pages_read + ' website pages answers this yet.' : "Your website hasn't been checked yet. Use “Check my site” on the Business tab.") + '</div>';
+    return;
+  }
+  el.innerHTML = manual + '<div class="small muted">Your website on this question</div>' + pages.slice(0, 3).map(function (pg) {
+    var chip = pg.verdict === 'answers' ? '<span class="chip ok">Answers it</span>' : pg.verdict === 'partial' ? '<span class="chip warn">Partly answers</span>' : '<span class="chip">Related</span>';
+    return '<div class="answer"><div class="answer-head">' + chip + '<a href="' + esc(pg.url) + '" target="_blank" rel="noopener">' + esc(pg.title || pg.url) + '</a></div>' +
+      (pg.reason ? '<p>' + esc(pg.reason) + '</p>' : '') +
+      (pg.improve ? '<p><span class="muted">To make it the best answer:</span> ' + esc(pg.improve) + '</p>' : '') + '</div>';
+  }).join('');
 }
 function renderAnswers(el, rows) {
   var seen = {}, latest = [];
@@ -833,7 +876,7 @@ $('add-prompt-btn').addEventListener('click', function () {
 async function refreshOverview() {
   if (!state.bizId) return;
   state.ov = await api('load_overview', { business_id: state.bizId });
-  renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule();
+  renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderSite();
 }
 
 /* ---------- competitors ---------- */
@@ -854,6 +897,7 @@ function renderBusiness() {
   $('b-reviews').value = b.review_count == null ? '' : b.review_count;
   $('biz-save').textContent = state.newBiz ? 'Create business' : 'Save profile';
   $('markets-card').hidden = state.newBiz;
+  $('site-card').hidden = state.newBiz;
   $('biz-saved').textContent = b.updated_at ? 'Last saved ' + fmtDate(b.updated_at, true) : '';
 }
 $('biz-form').addEventListener('submit', async function (e) {
@@ -903,6 +947,57 @@ $('m-add').addEventListener('click', async function () {
     var r = await api('save_market', null, { business_id: state.bizId, name: name, tier: Number($('m-tier').value) });
     state.markets.push(r.data); $('m-name').value = ''; renderMarkets(); toast('Market added');
   } catch (e) { fail('Could not add: ')(e); }
+});
+
+/* ---------- own website check ---------- */
+var sitePoll = null;
+function siteStageText(run, counts) {
+  if (run.stage === 'discover') return 'Reading your sitemap…';
+  if (run.stage === 'fetch') {
+    var done = counts ? (counts.fetched || 0) + (counts.ok || 0) : null, total = counts ? done + (counts.pending || 0) : null;
+    return 'Reading your pages one at a time' + (total ? ' (' + done + ' of ' + total + ')' : '') + '. Your site limits how fast, so this takes about 15 minutes. You can leave this page.';
+  }
+  return 'Matching your pages to your prompts…';
+}
+function renderSite(statusRun, counts) {
+  var s = (state.ov && state.ov.site) || {};
+  var run = statusRun || s.run;
+  $('site-pages').textContent = s.pages_read || 0;
+  $('site-blog').textContent = s.blog_posts || 0;
+  $('site-schema').innerHTML = esc(s.with_schema || 0) + '<small> / ' + esc(s.pages_read || 0) + '</small>';
+  var txt;
+  if (!run) txt = 'Not checked yet.';
+  else if (run.status === 'running') txt = siteStageText(run, counts);
+  else if (run.status === 'failed') txt = 'Last check stopped: ' + (run.error || 'unknown error');
+  else txt = 'Last checked ' + fmtDate(run.finished_at || run.started_at, true) + ' · matched against ' + (run.prompts_matched || 0) + ' prompts';
+  $('site-status').textContent = txt;
+  $('site-sub').textContent = state.biz && state.biz.website ? state.biz.website : 'add your website above';
+  var running = !!(run && run.status === 'running');
+  $('site-btn').disabled = running;
+  $('site-btn').textContent = running ? 'Checking…' : 'Check my site now';
+  if (running && !sitePoll) sitePoll = setInterval(pollSite, 10000);
+  if (!running && sitePoll) { clearInterval(sitePoll); sitePoll = null; }
+}
+async function pollSite() {
+  if (!state.bizId) return;
+  try {
+    var r = await api('site_status', { business_id: state.bizId });
+    var run = r.data;
+    if (run && run.status !== 'running') {
+      clearInterval(sitePoll); sitePoll = null;
+      if (run.status === 'completed') toast('Website check done');
+      await refreshOverview();
+    } else renderSite(run, r.counts);
+  } catch (e) { /* quiet */ }
+}
+$('site-btn').addEventListener('click', async function () {
+  if (!state.bizId) return;
+  if (!state.biz || !state.biz.website) { toast('Add your website above first'); return; }
+  try {
+    var r = await api('site_index_start', null, { business_id: state.bizId });
+    toast(r.already_running ? 'A check is already running' : 'Checking your website. This takes about 15 minutes.', 4000);
+    renderSite(r.data, null);
+  } catch (e) { fail('Could not start: ')(e); }
 });
 
 /* ---------- schedule ---------- */
