@@ -955,7 +955,7 @@ function siteStageText(run, counts) {
   if (run.stage === 'discover') return 'Reading your sitemap…';
   if (run.stage === 'fetch') {
     var done = counts ? (counts.fetched || 0) + (counts.ok || 0) : null, total = counts ? done + (counts.pending || 0) : null;
-    return 'Reading your pages one at a time' + (total ? ' (' + done + ' of ' + total + ')' : '') + '. Your site limits how fast, so this takes about 15 minutes. You can leave this page.';
+    return 'Reading your pages one at a time' + (total ? ' (' + done + ' of ' + total + ')' : '') + '. Your website host only allows a page every minute or so, so the first full check can take a few hours. Weekly re-checks only read pages that changed. You can leave this page.';
   }
   return 'Matching your pages to your prompts…';
 }
@@ -995,7 +995,7 @@ $('site-btn').addEventListener('click', async function () {
   if (!state.biz || !state.biz.website) { toast('Add your website above first'); return; }
   try {
     var r = await api('site_index_start', null, { business_id: state.bizId });
-    toast(r.already_running ? 'A check is already running' : 'Checking your website. This takes about 15 minutes.', 4000);
+    toast(r.already_running ? 'A check is already running' : 'Checking your website. It runs in the background.', 4000);
     renderSite(r.data, null);
   } catch (e) { fail('Could not start: ')(e); }
 });
