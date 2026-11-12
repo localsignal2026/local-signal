@@ -520,7 +520,8 @@ textarea { resize: vertical; min-height: 76px; }
         <div class="kpi"><p class="kpi-label">Blog posts</p><div class="kpi-value" id="site-blog">0</div></div>
         <div class="kpi"><p class="kpi-label">With schema</p><div class="kpi-value" id="site-schema">0</div><p class="kpi-foot">markup AI reads</p></div>
       </div>
-      <div class="form-actions"><button class="btn btn-ghost btn-sm" type="button" id="site-btn">Check my site now</button><span class="small muted" id="site-status"></span></div>
+      <div class="form-actions"><button class="btn btn-ghost btn-sm" type="button" id="site-btn">Check my site now</button><button class="btn btn-ghost btn-sm" type="button" id="site-export">Export pages (CSV)</button><span class="small muted" id="site-status"></span></div>
+      <p class="hint" style="margin-top:8px">The export lists every page with its title, H1, the questions it answers and anything to fix.</p>
     </div>
 
     <div class="card" id="markets-card">
@@ -1755,6 +1756,31 @@ $('site-btn').addEventListener('click', async function () {
     toast(r.already_running ? 'A check is already running' : 'Checking your website. It runs in the background.', 4000);
     renderSite(r.data, null);
   } catch (e) { fail('Could not start: ')(e); }
+});
+
+function downloadText(text, name, type) {
+  var blob = new Blob(['\ufeff' + text], { type: type });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.style.display = 'none';
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+function exportFileName() {
+  var d = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  var name = String((state.biz && (state.biz.slug || state.biz.name)) || 'business').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'business';
+  return 'localsignal-pages-' + name + '-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + '.csv';
+}
+$('site-export').addEventListener('click', async function () {
+  if (!state.bizId) return;
+  var btn = this, label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Exporting…';
+  try {
+    var r = await api('export_pages', { business_id: state.bizId }, null, 45000);
+    if (!r.rows) { toast('No pages yet. Tap "Check my site now" first.', 4000); return; }
+    downloadText(r.csv, exportFileName(), 'text/csv;charset=utf-8');
+    toast('Exported ' + r.rows + (r.rows === 1 ? ' page' : ' pages') + ' (' + r.matched + ' matched to your questions)', 4000);
+  } catch (e) { fail('Could not export: ')(e); }
+  finally { btn.disabled = false; btn.textContent = label; }
 });
 
 /* ---------- schedule ---------- */
