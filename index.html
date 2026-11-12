@@ -121,7 +121,7 @@ a { color: var(--accent); }
 .form-group.full { grid-column: 1 / -1; }
 .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--fg-muted); margin-bottom: 6px; }
 .form-group .help { font-size: 12px; color: var(--fg-dim); margin: 4px 0 0; }
-input[type="text"], input[type="password"], input[type="url"], input[type="number"], textarea, select { width: 100%; padding: 9px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--fg); font-size: 16px; outline: none; transition: border-color 0.15s; }
+input[type="text"], input[type="password"], input[type="url"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: 9px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--fg); font-size: 16px; outline: none; transition: border-color 0.15s; }
 input:focus, textarea:focus, select:focus { border-color: var(--accent); }
 textarea { resize: vertical; min-height: 76px; }
 .form-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -230,6 +230,44 @@ textarea { resize: vertical; min-height: 76px; }
 /* ---------- Markets ---------- */
 .market-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px auto; gap: 8px; align-items: center; padding: 6px 0; }
 
+/* ---------- Actions ---------- */
+.act-group { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-raised); margin-bottom: 14px; min-width: 0; }
+.act-group-head { padding: 14px; border-bottom: 1px solid var(--border); min-width: 0; }
+.act-diag { font-size: 14px; margin: 10px 0 0; max-width: 72ch; }
+.act { padding: 14px; border-bottom: 1px solid var(--border); min-width: 0; }
+.act:last-child { border-bottom: 0; }
+.act.dim { opacity: 0.6; }
+.act-title { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; margin-top: 8px; }
+.act-why { font-size: 14px; color: var(--fg-muted); margin: 4px 0 0; max-width: 72ch; }
+.act-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.box { background: var(--bg-input); border-radius: var(--radius); padding: 14px; margin-top: 12px; min-width: 0; }
+.box .form-group input, .box .form-group textarea { background: var(--bg-raised); }
+.checks { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.checks li { display: flex; gap: 8px; font-size: 13px; align-items: flex-start; min-width: 0; overflow-wrap: anywhere; }
+.checks .mark { width: 16px; flex-shrink: 0; font-weight: 700; text-align: center; }
+.checks .pass .mark { color: var(--green); } .checks .fail .mark { color: var(--red); } .checks .soft .mark { color: var(--orange); } .checks .wait .mark { color: var(--fg-dim); }
+.issue { border-left: 3px solid var(--orange); padding: 8px 10px; margin-top: 8px; font-size: 13px; background: var(--bg-raised); border-radius: 0 var(--radius) var(--radius) 0; overflow-wrap: anywhere; }
+.qscore { font-family: var(--mono); font-weight: 700; font-size: 22px; }
+.preview { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; max-height: 560px; overflow: auto; font-size: 15px; line-height: 1.6; margin-top: 12px; overflow-wrap: anywhere; }
+.preview h1, .preview h2, .preview h3, .preview h4 { line-height: 1.25; margin: 1.1em 0 0.4em; }
+.preview h1 { font-size: 22px; margin-top: 0; } .preview h2 { font-size: 18px; } .preview h3 { font-size: 16px; }
+.preview p, .preview li { max-width: 68ch; } .preview p { margin: 0 0 0.8em; }
+.preview table { border-collapse: collapse; display: block; overflow-x: auto; font-size: 13px; margin: 0 0 1em; }
+.preview th, .preview td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+.preview mark { background: var(--orange-dim); color: var(--orange); border-radius: 4px; padding: 0 3px; font-weight: 600; }
+.kv { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 6px 12px; font-size: 13px; margin-top: 12px; }
+.kv dt { color: var(--fg-muted); } .kv dd { margin: 0; overflow-wrap: anywhere; }
+.codebox { white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 12px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; max-height: 260px; overflow: auto; margin: 6px 0 0; }
+.copyblock { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-top: 10px; }
+.copyblock pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 14px; margin: 6px 0 0; }
+.pipeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pipe { background: var(--bg-input); border-radius: var(--radius); padding: 10px 12px; min-width: 0; }
+.pipe b { display: block; font-family: var(--mono); font-size: 20px; line-height: 1.2; }
+.pipe span { font-size: 12px; color: var(--fg-muted); }
+.pipe.good b { color: var(--green); }
+.opp-btns { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.editor { font-family: var(--mono); font-size: 13px !important; line-height: 1.5; min-height: 320px; }
+
 .toast { visibility: hidden; position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(160px); background: var(--bg-raised); border: 1px solid var(--border); color: var(--fg); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; z-index: 999; transition: transform 0.3s ease; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 .toast.show { visibility: visible; transform: translateX(-50%) translateY(0); }
 
@@ -244,6 +282,8 @@ textarea { resize: vertical; min-height: 76px; }
   .biz-switch { max-width: 160px; }
   .tab { padding: 8px 10px; }
   .market-row { grid-template-columns: minmax(0, 1fr) 92px auto; }
+  .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kv { grid-template-columns: minmax(0, 1fr); gap: 2px; } .kv dd { margin-bottom: 8px; }
 }
 </style>
 </head>
@@ -281,6 +321,7 @@ textarea { resize: vertical; min-height: 76px; }
   <div class="tabs" role="tablist">
     <button class="tab active" data-tab="overview" role="tab" type="button">Overview</button>
     <button class="tab" data-tab="prompts" role="tab" type="button">Prompts</button>
+    <button class="tab" data-tab="actions" role="tab" type="button">Actions</button>
     <button class="tab" data-tab="competitors" role="tab" type="button">Competitors</button>
     <button class="tab" data-tab="business" role="tab" type="button">Business</button>
     <button class="tab" data-tab="settings" role="tab" type="button">Settings</button>
@@ -330,6 +371,18 @@ textarea { resize: vertical; min-height: 76px; }
 
       <div class="grid-2">
         <div class="card">
+          <div class="card-head"><p class="card-title">Recent wins</p><p class="card-sub">when an AI starts naming you</p></div>
+          <div id="ov-wins"><div class="empty">Wins show up here when an AI starts naming you.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><p class="card-title">Your fixes</p><button class="btn-link" type="button" data-goto="actions">Open actions</button></div>
+          <div id="ov-pipeline"><div class="empty">No fixes yet.</div></div>
+        </div>
+      </div>
+      <div style="height:16px"></div>
+
+      <div class="grid-2">
+        <div class="card">
           <div class="card-head"><p class="card-title">Who AI recommends instead</p><button class="btn-link" type="button" data-goto="competitors">See all</button></div>
           <div id="ov-comps"><div class="empty">Competitors appear after a scan.</div></div>
         </div>
@@ -360,6 +413,23 @@ textarea { resize: vertical; min-height: 76px; }
     </div>
     <div id="new-prompt" class="card" hidden></div>
     <div id="prompt-list"></div>
+  </div>
+
+  <!-- ===== Actions ===== -->
+  <div class="panel" id="panel-actions">
+    <div class="row-between" style="margin-bottom:8px">
+      <h2 style="font-size:17px;margin:0">Actions</h2>
+      <span class="small muted" id="action-count"></span>
+    </div>
+    <p class="hint">Fixes for the questions where AI doesn't name you yet. Add what you know, get a draft, check it, approve it, then publish it on your own site. Each published fix is re-tested at 14, 30, 60 and 90 days.</p>
+    <div class="toolbar">
+      <div class="seg" id="action-filter">
+        <button type="button" data-f="todo" class="on">To do</button>
+        <button type="button" data-f="live">Published</button>
+        <button type="button" data-f="all">All</button>
+      </div>
+    </div>
+    <div id="action-list"><div class="empty">Loading&hellip;</div></div>
   </div>
 
   <!-- ===== Competitors ===== -->
@@ -463,7 +533,12 @@ var ENGINES = ['chatgpt', 'gemini', 'claude', 'perplexity'];
 var ENGINE_NAMES = { chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude', perplexity: 'Perplexity' };
 var INTENT_NAMES = { hiring: 'Hiring', buyer: 'Buyer', seller: 'Seller', relocation: 'Relocation', area_info: 'Area info', other: 'Other' };
 var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-var state = { passcode: '', unlocked: false, bizId: null, businesses: [], biz: null, markets: [], ov: null, filter: 'all', open: {}, newBiz: false };
+var ACTION_NAMES = { new_article: 'New article', improve_article: 'Improve a page', comparison_page: 'Comparison page', faq: 'FAQ page', area_page: 'Area page', service_page: 'Service page', about_bio: 'About / bio', homepage_copy: 'Homepage copy', internal_links: 'Internal links', schema: 'Schema markup', meta: 'Title & description', original_data: 'Original data', gbp_update: 'Google Business Profile', third_party_profile: 'Directory profile', entity_fix: 'Name & profile consistency', backlinks: 'Links from other sites', reviews: 'Reviews', refresh: 'Refresh a page', other: 'Other' };
+var CONTENT_ACTIONS = ['new_article', 'improve_article', 'comparison_page', 'faq', 'area_page', 'service_page', 'about_bio', 'homepage_copy', 'original_data', 'refresh'];
+var GAP_NAMES = { content: 'No page answers it', content_quality: 'Your page needs work', entity: "AI doesn't connect you", third_party: 'Missing on sites AI reads', reviews: 'Fewer reviews', technical: 'Technical gaps', local: 'Weak local signals', proof: 'Needs proof' };
+var TODO_STATUSES = ['recommended', 'drafting', 'drafted', 'approved'], LIVE_STATUSES = ['published', 'retesting', 'improved', 'no_change'];
+var state = { passcode: '', unlocked: false, bizId: null, businesses: [], biz: null, markets: [], ov: null, filter: 'all', open: {}, newBiz: false,
+  actions: null, actFilter: 'todo', actOpen: {}, recommending: {}, grading: {}, drafts: {}, edits: {}, takes: {}, draftView: {}, actPoll: null };
 var pollTimer = null, pollStarted = 0;
 
 /* ---------- helpers ---------- */
@@ -498,13 +573,13 @@ function tierChip(m) { return m ? '<span class="chip t' + m.tier + '">' + esc(m.
 function AuthError() { this.message = 'locked'; }
 AuthError.prototype = Object.create(Error.prototype);
 
-async function api(action, params, body) {
+async function api(action, params, body, timeoutMs) {
   var url = API + '?action=' + encodeURIComponent(action);
   if (params) Object.keys(params).forEach(function (k) { if (params[k] != null) url += '&' + k + '=' + encodeURIComponent(params[k]); });
   var opts = { headers: { 'Content-Type': 'application/json', 'x-passcode': state.passcode } };
   if (body) { opts.method = 'POST'; opts.body = JSON.stringify(body); }
   var resp, ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
+  var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeoutMs || 20000) : null;
   if (ctrl) opts.signal = ctrl.signal;
   try { resp = await fetch(url, opts); }
   catch (e) {
@@ -535,6 +610,7 @@ function lock(msg) {
   sdel(PASS_KEY); state.passcode = ''; state.unlocked = false;
   stopPolling();
   if (sitePoll) { clearInterval(sitePoll); sitePoll = null; }
+  if (state.actPoll) { clearInterval(state.actPoll); state.actPoll = null; }
   showGate(msg);
 }
 $('gate-form').addEventListener('submit', async function (e) {
@@ -588,10 +664,11 @@ $('biz-switch').addEventListener('change', function () {
 async function loadAll() {
   hideError();
   if (!state.bizId) { renderNoBusiness(); return; }
-  var res = await Promise.all([api('load_business', { id: state.bizId }), api('load_overview', { business_id: state.bizId }), api('load_keys')]);
+  var res = await Promise.all([api('load_business', { id: state.bizId }), api('load_overview', { business_id: state.bizId }), api('load_keys'), api('list_actions', { business_id: state.bizId })]);
   state.biz = res[0].data; state.markets = res[0].markets || [];
   state.ov = res[1];
-  renderBusiness(); renderMarkets(); renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderKeys(res[2].data || []); renderSite();
+  state.actions = res[3].data || [];
+  renderBusiness(); renderMarkets(); renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderKeys(res[2].data || []); renderSite(); renderActions(); syncActionPoll();
   if (state.ov.running && !pollTimer) startPolling(state.ov.running.id, true);
 }
 function renderNoBusiness() {
@@ -644,11 +721,14 @@ function renderOverview() {
   });
   $('ov-opps').innerHTML = opps.length ? opps.slice(0, 6).map(function (p) {
     return '<div class="list-row"><span class="score" title="Opportunity score (0–100)">' + esc(p.opportunity == null ? '–' : p.opportunity) + '</span><div class="grow"><div class="name">' + esc(p.prompt) + '</div><div class="chips">' +
-      statusChip(p) + tierChip(p.market) + (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') + contentChip(p) + '</div></div>' +
-      '<button class="btn-link" type="button" data-open-prompt="' + esc(p.id) + '">Open</button></div>';
+      statusChip(p) + tierChip(p.market) + (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') + contentChip(p) + fixChip(p) + '</div></div>' +
+      '<div class="opp-btns">' + fixButton(p, 'btn btn-ghost btn-sm') + '<button class="btn-link" type="button" data-open-prompt="' + esc(p.id) + '">Answers</button></div></div>';
   }).join('') + (opps.length > 6 ? '<p class="small muted" style="margin:10px 0 0">+' + (opps.length - 6) + ' more on the Prompts tab</p>' : '')
     : '<div class="empty">' + (latest ? 'Every tracked prompt names you in at least one AI. 🎉' : 'Run a scan to find your gaps.') + '</div>';
   bindOpenPrompt($('ov-opps'));
+  bindFix($('ov-opps'));
+  renderWins();
+  renderPipeline();
 
   var comps = ov.competitors || [], doms = ov.domains || [];
   $('ov-comps').innerHTML = comps.length ? comps.slice(0, 6).map(compRow).join('') : '<div class="empty">Competitors appear after a scan.</div>';
@@ -736,7 +816,7 @@ function promptCard(p) {
       '<div class="grow"><div class="prompt-q">' + esc(p.prompt) + '</div><div class="chips">' + tierChip(p.market) +
         (p.intent ? '<span class="chip">' + esc(INTENT_NAMES[p.intent] || p.intent) + '</span>' : '') +
         (p.audience ? '<span class="chip">' + esc(p.audience === 'both' ? 'Buyers & sellers' : p.audience === 'buyer' ? 'Buyers' : 'Sellers') + '</span>' : '') +
-        contentChip(p) + (p.is_active ? '' : '<span class="chip">Paused</span>') + (p.source === 'pickedbygpt' ? '<span class="chip">From Picked By GPT</span>' : '') + '</div></div>' +
+        contentChip(p) + fixChip(p) + (p.is_active ? '' : '<span class="chip">Paused</span>') + (p.source === 'pickedbygpt' ? '<span class="chip">From Picked By GPT</span>' : '') + '</div></div>' +
       '<div class="prompt-score">' + status + (l ? '<span class="mono">' + vis + '/' + l.ok_checks + '</span>' + engineDots(l.engines_visible) : '') + '</div>' +
     '</button><div class="prompt-body" hidden></div></div>';
 }
@@ -783,12 +863,15 @@ async function openPromptBody(id) {
   var p = state.ov.prompts.filter(function (x) { return x.id === id; })[0]; if (!p) return;
   var body = card.querySelector('.prompt-body');
   body.hidden = false;
-  body.innerHTML = '<div class="answers" data-pages></div><div class="answers" data-answers><div class="small muted">Loading answers…</div></div>' +
+  var fixBtn = fixButton(p, 'btn btn-primary btn-sm');
+  body.innerHTML = (fixBtn ? '<div class="act-buttons">' + fixBtn + '<span class="small muted">' + (p.actions && p.actions.open ? 'Local Signal already has a fix for this.' : 'Local Signal works out why AI picks others and drafts the fix.') + '</span></div>' : '') +
+    '<div class="answers" data-pages></div><div class="answers" data-answers><div class="small muted">Loading answers…</div></div>' +
     '<details class="edit" style="margin-top:14px"><summary class="btn-link">Edit prompt</summary><div style="margin-top:12px">' + promptForm(p) +
     '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" data-act="save">Save</button>' +
     '<button class="btn btn-ghost btn-sm" type="button" data-act="retest">Re-test now</button>' +
     '<button class="btn btn-ghost btn-sm" type="button" data-act="pause">' + (p.is_active ? 'Pause' : 'Resume') + '</button>' +
     '<button class="btn btn-ghost btn-sm" type="button" data-act="delete">Delete</button></div></div></details>';
+  bindFix(body);
   body.querySelector('[data-act="save"]').addEventListener('click', function () { savePrompt(id, body); });
   body.querySelector('[data-act="retest"]').addEventListener('click', function () { runScan([id]); });
   body.querySelector('[data-act="pause"]').addEventListener('click', function () { setActive(id, !p.is_active); });
@@ -877,6 +960,475 @@ async function refreshOverview() {
   if (!state.bizId) return;
   state.ov = await api('load_overview', { business_id: state.bizId });
   renderOverview(); renderPrompts(); renderCompetitors(); renderSchedule(); renderSite();
+  if (state.actions) renderActions();
+}
+
+/* ---------- wins + fixes pipeline (overview) ---------- */
+function renderWins() {
+  var w = (state.ov && state.ov.wins) || [];
+  $('ov-wins').innerHTML = w.length ? w.slice(0, 6).map(function (x) {
+    var what = (ENGINE_NAMES[x.engine] || x.engine) + (x.first_check ? ' named you' : ' started naming you') + (x.mention_rank ? ' #' + x.mention_rank : '') + (x.cited_own_site ? ' and cited your site' : '');
+    return '<div class="list-row"><span class="dot ' + esc(x.engine) + '"></span><div class="grow"><div class="name">' + esc(what) + '</div><div class="meta">' + esc(x.prompt) + '</div></div>' +
+      '<span class="meta" style="white-space:nowrap">' + esc(fmtDate(x.scan_date)) + '</span></div>';
+  }).join('') : '<div class="empty">Wins show up here when an AI starts naming you.</div>';
+}
+function renderPipeline() {
+  var s = (state.ov && state.ov.actions_summary) || {};
+  var n = function (keys) { return keys.reduce(function (t, k) { return t + (Number(s[k]) || 0); }, 0); };
+  var items = [['To do', n(['recommended'])], ['Drafts', n(['drafting', 'drafted'])], ['Approved', n(['approved'])], ['Published', n(['published', 'retesting'])], ['Visibility up', n(['improved']), 'good'], ['No change yet', n(['no_change'])]];
+  var total = items.reduce(function (t, i) { return t + i[1]; }, 0);
+  $('ov-pipeline').innerHTML = total ? '<div class="pipeline">' + items.map(function (i) { return '<div class="pipe' + (i[2] && i[1] ? ' ' + i[2] : '') + '"><b>' + i[1] + '</b><span>' + esc(i[0]) + '</span></div>'; }).join('') + '</div>'
+    : '<div class="empty">No fixes yet. Tap “Fix it” on a question in the Opportunity queue.</div>';
+}
+
+/* ---------- actions: recommend -> draft -> check -> approve -> publish -> re-test ---------- */
+function promptById(id) { return ((state.ov && state.ov.prompts) || []).filter(function (p) { return p.id === id; })[0] || null; }
+function fixChip(p) { return p.actions && p.actions.open ? '<span class="chip t1">' + p.actions.open + ' fix' + (p.actions.open === 1 ? '' : 'es') + ' to do</span>' : ''; }
+function fixButton(p, cls) {
+  if (!p || !p.is_active || p.status === 'not_scanned') return '';
+  var label = state.recommending[p.id] ? 'Working…' : p.actions && p.actions.open ? 'See the fix' : p.status === 'named' ? 'Strengthen it' : 'Fix it';
+  return '<button class="' + cls + '" type="button" data-fix="' + esc(p.id) + '">' + label + '</button>';
+}
+function bindFix(root) { root.querySelectorAll('[data-fix]').forEach(function (b) { b.addEventListener('click', function () { fixPrompt(b.dataset.fix); }); }); }
+function scrollToGroup(sid) { setTimeout(function () { var el = $('ag-' + sid); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); }
+function setActFilterUi() { document.querySelectorAll('#action-filter button').forEach(function (b) { b.classList.toggle('on', b.dataset.f === state.actFilter); }); }
+document.querySelectorAll('#action-filter button').forEach(function (b) {
+  b.addEventListener('click', function () { state.actFilter = b.dataset.f; setActFilterUi(); renderActions(); });
+});
+
+async function loadActions() {
+  if (!state.bizId) return;
+  var r = await api('list_actions', { business_id: state.bizId });
+  state.actions = r.data || [];
+  renderActions(); syncActionPoll();
+}
+function syncActionPoll() {
+  var busy = (state.actions || []).some(function (a) { return a.status === 'drafting'; });
+  if (busy && !state.actPoll) state.actPoll = setInterval(pollActions, 5000);
+  if (!busy && state.actPoll) { clearInterval(state.actPoll); state.actPoll = null; }
+}
+async function pollActions() {
+  var before = {};
+  (state.actions || []).forEach(function (a) { before[a.id] = a.status; });
+  try {
+    var r = await api('list_actions', { business_id: state.bizId });
+    state.actions = r.data || [];
+  } catch (e) { return; }
+  var changed = false;
+  state.actions.forEach(function (a) {
+    if (before[a.id] !== a.status) changed = true;
+    if (before[a.id] === 'drafting' && a.status === 'drafted') { state.actOpen[a.id] = 'draft'; toast('Draft ready. Checking it now…'); }
+    if (before[a.id] === 'drafting' && a.status === 'recommended') toast('The draft didn’t finish: ' + ((a.draft && a.draft.error) || 'try again'), 6000);
+  });
+  if (changed) { renderActions(); refreshOverview().catch(function () {}); }
+  syncActionPoll();
+}
+
+async function fixPrompt(sid) {
+  var p = promptById(sid);
+  state.actFilter = 'todo'; setActFilterUi();
+  if ((p && p.actions && p.actions.open) || state.recommending[sid]) { showTab('actions'); renderActions(); scrollToGroup(sid); return; }
+  state.recommending[sid] = true;
+  showTab('actions'); renderActions(); scrollToGroup(sid);
+  try {
+    var r = await api('recommend', null, { scenario_id: sid }, 150000);
+    var n = r.data && r.data.actions ? r.data.actions.length : 0;
+    toast(n ? 'Here ' + (n === 1 ? 'is the fix' : 'are ' + n + ' fixes') + ', best first' : 'Done');
+  } catch (e) { fail('Could not work out the fix: ')(e); }
+  finally {
+    delete state.recommending[sid];
+    try { await loadActions(); await refreshOverview(); } catch (e) {}
+    scrollToGroup(sid);
+  }
+}
+
+var IMPACT_RANK = { high: 0, medium: 1, low: 2 }, EFFORT_RANK = { low: 0, medium: 1, high: 2 };
+function sortActs(a, b) {
+  return (IMPACT_RANK[a.impact] - IMPACT_RANK[b.impact]) || (EFFORT_RANK[a.effort] - EFFORT_RANK[b.effort]) || String(a.title).localeCompare(String(b.title));
+}
+function renderActions() {
+  var all = state.actions || [], f = state.actFilter;
+  var list = all.filter(function (a) { return f === 'all' || (f === 'todo' ? TODO_STATUSES.indexOf(a.status) >= 0 : LIVE_STATUSES.indexOf(a.status) >= 0); });
+  var groups = {}, order = [];
+  list.forEach(function (a) { var k = a.scenario_id || 'none'; if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(a); });
+  Object.keys(state.recommending).forEach(function (sid) { if (!groups[sid]) { groups[sid] = []; order.push(sid); } });
+  order.sort(function (x, y) { return ((promptById(y) || {}).opportunity || 0) - ((promptById(x) || {}).opportunity || 0); });
+  var todo = all.filter(function (a) { return TODO_STATUSES.indexOf(a.status) >= 0; }).length;
+  var live = all.filter(function (a) { return LIVE_STATUSES.indexOf(a.status) >= 0; }).length;
+  $('action-count').textContent = todo + ' to do · ' + live + ' published';
+  $('action-list').innerHTML = order.length ? order.map(function (sid) { return actionGroup(sid, groups[sid]); }).join('')
+    : '<div class="card empty"><h3>' + (f === 'live' ? 'Nothing published yet' : 'No fixes here yet') + '</h3><p>' +
+      (f === 'live' ? 'When you publish an approved fix, it shows up here with its re-test results.' : 'Tap “Fix it” on a question in the Opportunity queue (Overview tab) and Local Signal will work out what to change.') + '</p></div>';
+  bindActions($('action-list'));
+}
+function actionGroup(sid, acts) {
+  var p = promptById(sid);
+  var ev = ((acts.filter(function (a) { return a.evidence && a.evidence.diagnosis; })[0]) || {}).evidence || {};
+  var busy = !!state.recommending[sid];
+  var promptText = p ? p.prompt : (acts[0] && acts[0].prompt) || 'Other';
+  var head = '<div class="act-group-head"><div class="row-between" style="align-items:flex-start"><div class="grow"><div class="prompt-q">' + esc(promptText) + '</div>' +
+    '<div class="chips">' + (p ? statusChip(p) + tierChip(p.market) + contentChip(p) : '') +
+    (ev.gaps || []).filter(function (g) {
+      // Skip gaps the content chip already says.
+      var cs = p && p.content ? p.content.state : null;
+      return !((g.type === 'content_quality' && cs === 'partial') || (g.type === 'content' && cs === 'none'));
+    }).map(function (g) { return '<span class="chip warn" title="' + esc(g.evidence) + '">' + esc(GAP_NAMES[g.type] || g.type) + '</span>'; }).join('') + '</div></div>' +
+    (p && !busy && acts.length && state.actFilter !== 'live' ? '<button class="btn-link" type="button" data-rediagnose="' + esc(sid) + '">Re-diagnose</button>' : '') + '</div>' +
+    (ev.diagnosis ? '<p class="act-diag"><span class="muted">Why AI picks others: </span>' + esc(ev.diagnosis) + '</p>' : '') +
+    (busy ? '<div class="scan-status" style="margin:12px 0 0"><div class="spinner"></div><span>Reading the AI answers and your website to work out the fix. About 30 seconds.</span></div>' : '') + '</div>';
+  return '<div class="act-group" id="ag-' + esc(sid) + '">' + head + acts.slice().sort(sortActs).map(actionCard).join('') + '</div>';
+}
+function statusTag(a) {
+  var m = { recommended: ['To do', ''], drafting: ['Writing…', 't1'], drafted: ['Draft ready', 't1'], approved: ['Approved', 'ok'], published: ['Published', 'ok'], retesting: ['Re-testing', 'ok'], improved: ['Visibility up', 'ok'], no_change: ['No change yet', 'warn'], dismissed: ['Dismissed', ''] }[a.status] || [a.status, ''];
+  return '<span class="chip ' + m[1] + '">' + esc(m[0]) + '</span>';
+}
+function qualityChip(q) {
+  if (!q) return '';
+  var failing = (q.checks || []).filter(function (c) { return c.required && !c.pass; }).length;
+  return q.ready ? '<span class="chip ok">Score ' + q.score + ' · ready</span>' : '<span class="chip no">Score ' + q.score + ' · ' + failing + ' to fix</span>';
+}
+function actionCard(a) {
+  var d = a.draft, open = state.actOpen[a.id];
+  var chips = '<div class="chips" style="margin-top:0"><span class="chip t1">' + esc(ACTION_NAMES[a.type] || a.type) + '</span>' + statusTag(a) +
+    '<span class="chip">Impact: ' + esc(a.impact) + '</span><span class="chip">Effort: ' + esc(a.effort) + '</span>' + (a.status === 'drafted' ? qualityChip(d && d.quality) : '') + '</div>';
+  var target = a.target_url ? '<p class="small" style="margin:6px 0 0"><span class="muted">Page to improve:</span> <a href="' + esc(a.target_url) + '" target="_blank" rel="noopener">' + esc(a.target_url.replace(/^https?:\/\/(www\.)?/, '')) + '</a></p>' : '';
+  var btns = [], extra = '';
+  var draftBtn = d && d.status === 'ready' ? '<button class="btn btn-ghost btn-sm" type="button" data-toggle="draft" data-aid="' + esc(a.id) + '">' + (open === 'draft' ? 'Hide draft' : 'Open draft') + '</button>' : '';
+  if (a.status === 'recommended') {
+    btns.push('<button class="btn btn-primary btn-sm" type="button" data-toggle="take" data-aid="' + esc(a.id) + '">' + (d ? 'Try again' : 'Write it') + '</button>');
+    btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="dismiss" data-aid="' + esc(a.id) + '">Not now</button>');
+    if (d && d.status === 'failed') extra = '<p class="small" style="color:var(--red);margin:8px 0 0">Last draft didn’t finish: ' + esc(d.error || 'unknown error') + '</p>';
+  } else if (a.status === 'drafting') {
+    extra = '<div class="scan-status" style="margin:12px 0 0"><div class="spinner"></div><span>Writing the draft from your notes. Usually 1–2 minutes; you can leave this page.</span></div>';
+  } else if (a.status === 'drafted') {
+    btns.push(draftBtn);
+    btns.push('<button class="btn btn-ghost btn-sm" type="button" data-toggle="take" data-aid="' + esc(a.id) + '">Rewrite with new notes</button>');
+    btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="dismiss" data-aid="' + esc(a.id) + '">Not now</button>');
+  } else if (a.status === 'approved') {
+    btns.push('<button class="btn btn-primary btn-sm" type="button" data-toggle="publish" data-aid="' + esc(a.id) + '">Mark as published</button>');
+    btns.push(draftBtn);
+    btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="unapprove" data-aid="' + esc(a.id) + '">Back to draft</button>');
+  } else if (LIVE_STATUSES.indexOf(a.status) >= 0) {
+    extra = retestBlock(a);
+    btns.push(draftBtn);
+    btns.push('<button class="btn btn-ghost btn-sm" type="button" data-toggle="publish" data-aid="' + esc(a.id) + '">Edit published details</button>');
+  } else if (a.status === 'dismissed') {
+    btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="restore" data-aid="' + esc(a.id) + '">Restore</button>');
+  }
+  var panel = '';
+  if (open === 'take' && (a.status === 'recommended' || a.status === 'drafted')) panel = takeForm(a);
+  else if (open === 'draft' && d && d.status === 'ready') panel = '<div class="box" data-draft-panel="' + esc(d.id) + '" data-aid="' + esc(a.id) + '"><div class="small muted">Loading draft…</div></div>';
+  else if (open === 'publish') panel = publishForm(a);
+  return '<div class="act' + (a.status === 'dismissed' ? ' dim' : '') + '" id="act-' + esc(a.id) + '">' + chips +
+    '<div class="act-title">' + esc(a.title) + '</div>' + (a.why ? '<p class="act-why">' + esc(a.why) + '</p>' : '') + target + extra +
+    (btns.filter(Boolean).length ? '<div class="act-buttons">' + btns.join('') + '</div>' : '') + panel + '</div>';
+}
+function fmtDay(s) {
+  var m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/); if (!m) return '';
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function todayLocal() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function retestBlock(a) {
+  var b = a.baseline || {};
+  var named = function (r) { return 'named in ' + (r.visible || 0) + ' of ' + (r.ok || 0) + ' answers' + (r.engines_visible && r.engines_visible.length ? ' (' + r.engines_visible.map(function (e) { return ENGINE_NAMES[e] || e; }).join(', ') + ')' : ''); };
+  var rows = (a.retests || []).map(function (t) {
+    if (t.status === 'done' && t.result) return '<li class="pass"><span class="mark">•</span><span><b>Day ' + t.day_offset + ':</b> ' + esc(named(t.result)) + '</span></li>';
+    if (t.status === 'running') return '<li class="wait"><span class="mark">…</span><span><b>Day ' + t.day_offset + ':</b> re-testing now</span></li>';
+    return '<li class="wait"><span class="mark">○</span><span><b>Day ' + t.day_offset + ':</b> ' + esc(fmtDay(t.due_on)) + '</span></li>';
+  }).join('');
+  var verdict = a.status === 'improved' ? '<p style="margin:8px 0 0;color:var(--green);font-weight:600">Visibility increased after these changes.</p>'
+    : a.status === 'no_change' ? '<p style="margin:8px 0 0;color:var(--orange);font-weight:600">No change in AI answers yet after these changes.</p>' : '';
+  return '<div class="box"><div class="small">Published ' + esc(fmtDay(a.published_at)) + (a.published_url ? ' · <a href="' + esc(a.published_url) + '" target="_blank" rel="noopener">' + esc(a.published_url.replace(/^https?:\/\/(www\.)?/, '')) + '</a>' : '') + '</div>' +
+    '<div class="small muted">Before: ' + esc(named(b)) + '</div>' + verdict + '<ul class="checks">' + rows + '</ul></div>';
+}
+function takeField(a, key, label, help, ph) {
+  var t = state.takes[a.id] || {};
+  return '<div class="form-group"><label>' + esc(label) + '</label><textarea rows="3" data-take-f="' + key + '" placeholder="' + esc(ph) + '">' + esc(t[key] || '') + '</textarea>' + (help ? '<p class="help">' + esc(help) + '</p>' : '') + '</div>';
+}
+function takeForm(a) {
+  if (!state.takes[a.id]) {
+    // Start from the notes used last time, for this fix or another fix on the same question.
+    var prev = a.draft && a.draft.local_take;
+    if (!prev) (state.actions || []).forEach(function (x) { if (!prev && x.scenario_id === a.scenario_id && x.draft && x.draft.local_take) prev = x.draft.local_take; });
+    state.takes[a.id] = Object.assign({}, prev || {});
+  }
+  var content = CONTENT_ACTIONS.indexOf(a.type) >= 0;
+  return '<div class="box" data-take="' + esc(a.id) + '"><p class="small" style="margin:0 0 12px">Your first-hand knowledge is what makes AI quote you instead of a directory. A sentence or two each is plenty. The draft never invents numbers; it leaves a blank for you to fill instead.</p>' +
+    takeField(a, 'advice', content ? 'What do you tell clients about this?' : 'What should people know about you here?', '', content ? 'e.g. Most of my Nocatee buyers end up choosing resale because lot premiums and upgrades add up fast.' : 'e.g. We specialize in relocation buyers moving to Nocatee and St. Johns County.') +
+    takeField(a, 'example', 'A real example (no client names)', '', 'e.g. A family relocating from Chicago saved on closing costs by using a builder incentive.') +
+    takeField(a, 'numbers', 'Numbers you know first-hand', 'Only numbers you’re confident in. Leave blank if unsure.', 'e.g. Upgrades usually add $40k–$80k on new builds here.') +
+    takeField(a, 'avoid', 'Anything to avoid saying (optional)', '', 'e.g. Don’t name specific builders.') +
+    '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" data-write="' + esc(a.id) + '">Write the draft</button><button class="btn btn-ghost btn-sm" type="button" data-close="' + esc(a.id) + '">Cancel</button></div></div>';
+}
+function publishForm(a) {
+  var content = CONTENT_ACTIONS.indexOf(a.type) >= 0;
+  var urlVal = a.published_url || a.target_url || '';
+  var dateVal = a.published_at ? String(a.published_at).slice(0, 10) : todayLocal();
+  return '<div class="box" data-publish="' + esc(a.id) + '"><div class="form-grid">' +
+    '<div class="form-group"><label>' + (content ? 'Live URL on your site' : 'Link (optional)') + '</label><input type="url" inputmode="url" data-pub="url" value="' + esc(urlVal) + '" placeholder="https://' + esc((state.biz && state.biz.website) || 'yoursite.com').replace(/^https?:\/\//, '') + '/..."></div>' +
+    '<div class="form-group"><label>Date it went live</label><input type="date" data-pub="date" value="' + esc(dateVal) + '" max="' + esc(todayLocal()) + '"></div></div>' +
+    '<p class="help" style="margin:0 0 12px">Local Signal saves today’s AI answers as the “before” and re-tests this question at 14, 30, 60 and 90 days.</p>' +
+    '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" data-pubsave="' + esc(a.id) + '">Save</button><button class="btn btn-ghost btn-sm" type="button" data-close="' + esc(a.id) + '">Cancel</button></div></div>';
+}
+
+function bindActions(root) {
+  root.querySelectorAll('[data-toggle]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.dataset.aid, what = b.dataset.toggle;
+      state.actOpen[id] = state.actOpen[id] === what ? null : what;
+      renderActions();
+      if (state.actOpen[id]) { var el = $('act-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    });
+  });
+  root.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { state.actOpen[b.dataset.close] = null; renderActions(); }); });
+  root.querySelectorAll('[data-rediagnose]').forEach(function (b) {
+    b.addEventListener('click', async function () {
+      var sid = b.dataset.rediagnose;
+      if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Replace the to-do fixes?'; b.style.color = 'var(--red)'; setTimeout(function () { if (b.isConnected) { delete b.dataset.armed; b.textContent = 'Re-diagnose'; b.style.color = ''; } }, 3500); return; }
+      state.recommending[sid] = true; renderActions();
+      try { await api('recommend', null, { scenario_id: sid }, 150000); toast('Fixes updated'); }
+      catch (e) { fail('Could not re-diagnose: ')(e); }
+      finally { delete state.recommending[sid]; try { await loadActions(); await refreshOverview(); } catch (e) {} }
+    });
+  });
+  root.querySelectorAll('[data-update]').forEach(function (b) {
+    b.addEventListener('click', async function () {
+      var id = b.dataset.aid, op = b.dataset.update;
+      b.disabled = true;
+      try {
+        await api('action_update', null, { id: id, op: op });
+        toast({ dismiss: 'Moved to All', restore: 'Restored', unapprove: 'Back to draft', approve: 'Approved' }[op] || 'Saved');
+        if (op === 'approve') state.actOpen[id] = 'publish';
+        await loadActions(); refreshOverview().catch(function () {});
+      } catch (e) { b.disabled = false; fail('Could not update: ')(e); }
+    });
+  });
+  root.querySelectorAll('[data-take]').forEach(function (box) {
+    var id = box.dataset.take;
+    box.querySelectorAll('[data-take-f]').forEach(function (el) {
+      el.addEventListener('input', function () { (state.takes[id] = state.takes[id] || {})[el.dataset.takeF] = el.value; });
+    });
+  });
+  root.querySelectorAll('[data-write]').forEach(function (b) {
+    b.addEventListener('click', async function () {
+      var id = b.dataset.write, t = state.takes[id] || {};
+      if (!String(t.advice || '').trim() && !String(t.example || '').trim() && !String(t.numbers || '').trim()) { toast('Add at least one thing you know first-hand so the draft isn’t generic.', 4500); return; }
+      b.disabled = true; b.textContent = 'Starting…';
+      try {
+        await api('draft_start', null, { action_id: id, local_take: t }, 40000);
+        state.actOpen[id] = null;
+        toast('Writing the draft. It takes a minute or two.', 4000);
+        await loadActions();
+      } catch (e) { b.disabled = false; b.textContent = 'Write the draft'; fail('Could not start the draft: ')(e); }
+    });
+  });
+  root.querySelectorAll('[data-pubsave]').forEach(function (b) {
+    b.addEventListener('click', async function () {
+      var id = b.dataset.pubsave, box = root.querySelector('[data-publish="' + id + '"]');
+      b.disabled = true;
+      try {
+        await api('action_update', null, { id: id, op: 'publish', published_url: box.querySelector('[data-pub="url"]').value.trim(), published_at: box.querySelector('[data-pub="date"]').value });
+        state.actOpen[id] = null;
+        toast('Saved. Re-tests are scheduled.', 4000);
+        await loadActions(); refreshOverview().catch(function () {});
+      } catch (e) { b.disabled = false; fail('Could not save: ')(e); }
+    });
+  });
+  root.querySelectorAll('[data-draft-panel]').forEach(function (el) {
+    var a = (state.actions || []).filter(function (x) { return x.id === el.dataset.aid; })[0];
+    if (a) fillDraftPanel(el, a);
+  });
+}
+
+/* ---------- draft review ---------- */
+async function fillDraftPanel(el, a) {
+  var id = a.draft.id, d = state.drafts[id];
+  if (!d || d.updated_at !== a.draft.updated_at) {
+    var fresh;
+    try { fresh = (await api('draft_get', { draft_id: id })).data; }
+    catch (e) { if (!(e instanceof AuthError) && el.isConnected) el.innerHTML = '<div class="small" style="color:var(--red)">' + esc(e.message) + '</div>'; return; }
+    // Another render may have stored a newer copy (e.g. after a check) while this one was loading.
+    var cur = state.drafts[id];
+    d = cur && String(cur.updated_at) > String(fresh.updated_at) ? cur : fresh;
+    state.drafts[id] = d;
+  }
+  if (!el.isConnected) return;
+  el.innerHTML = draftPanel(a, d);
+  bindDraftPanel(el, a, d);
+  // Check each new draft automatically, once.
+  if (!d.quality && !state.grading[id] && !(state.autoChecked = state.autoChecked || {})[id]) { state.autoChecked[id] = true; gradeDraft(a, d, null); }
+}
+async function gradeDraft(a, d, content) {
+  state.grading[d.id] = true;
+  renderActions();
+  try {
+    var r = await api('draft_grade', null, { draft_id: d.id, content: content }, 150000);
+    d.quality = r.data.quality; d.content = r.data.content; state.drafts[d.id] = d;
+    delete state.edits[d.id];
+    var failing = (d.quality.checks || []).filter(function (c) { return c.required && !c.pass; }).length;
+    toast(d.quality.ready ? 'Checked: ready to approve' : 'Checked: ' + failing + ' thing' + (failing === 1 ? '' : 's') + ' to fix', 4000);
+  } catch (e) { fail('Could not check the draft: ')(e); }
+  finally {
+    delete state.grading[d.id];
+    try { await loadActions(); } catch (e) { renderActions(); }
+  }
+}
+function contentWithEdits(d) {
+  var c = JSON.parse(JSON.stringify(d.content || {})), e = state.edits[d.id];
+  if (e) Object.keys(e).forEach(function (k) {
+    if (k.indexOf('cb:') === 0) { var i = Number(k.slice(3)); if (c.copy_blocks && c.copy_blocks[i]) c.copy_blocks[i].text = e[k]; }
+    else c[k] = e[k];
+  });
+  return c;
+}
+function mdInline(s, preview) {
+  var h = esc(s)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, function (m, t, u) { return '<a href="' + u + '"' + (preview ? ' target="_blank" rel="noopener"' : '') + '>' + t + '</a>'; });
+  return preview ? h.replace(/\[(add|verify)[^\]]*\]/gi, function (m) { return '<mark>' + m + '</mark>'; }) : h;
+}
+function mdToHtml(md, preview) {
+  // Line-based so headings, lists and tables work with or without blank lines around them.
+  var out = [], para = [], list = null, table = null;
+  var flushPara = function () { if (para.length) { out.push('<p>' + mdInline(para.join('\n'), preview).replace(/\n/g, '<br>') + '</p>'); para = []; } };
+  var flushList = function () { if (list) { out.push('<' + list.tag + '>' + list.items.map(function (li) { return '<li>' + mdInline(li, preview) + '</li>'; }).join('') + '</' + list.tag + '>'); list = null; } };
+  var cells = function (l) { return l.replace(/^\||\|$/g, '').split('|').map(function (c) { return c.trim(); }); };
+  var flushTable = function () {
+    if (table) out.push('<table>' + table.map(function (l, i) { return '<tr>' + cells(l).map(function (c) { return i === 0 ? '<th>' + mdInline(c, preview) + '</th>' : '<td>' + mdInline(c, preview) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table>');
+    table = null;
+  };
+  var flushAll = function () { flushPara(); flushList(); flushTable(); };
+  String(md || '').replace(/\r/g, '').split('\n').forEach(function (raw) {
+    var l = raw.trim();
+    if (!l) { flushAll(); return; }
+    var h = l.match(/^(#{1,4})\s+(.*)$/);
+    if (h) { flushAll(); out.push('<h' + h[1].length + '>' + mdInline(h[2], preview) + '</h' + h[1].length + '>'); return; }
+    if (/^\|/.test(l)) { flushPara(); flushList(); if (!/^\|\s*:?-{2,}/.test(l)) (table = table || []).push(l); return; }
+    var ul = l.match(/^[-*]\s+(.*)$/), ol = l.match(/^\d+[.)]\s+(.*)$/);
+    if (ul || ol) {
+      flushPara(); flushTable();
+      var tag = ul ? 'ul' : 'ol';
+      if (list && list.tag !== tag) flushList();
+      list = list || { tag: tag, items: [] };
+      list.items.push((ul || ol)[1]);
+      return;
+    }
+    flushList(); flushTable(); para.push(l);
+  });
+  flushAll();
+  return out.join('\n');
+}
+function draftHtml(c) {
+  var html = (c.title ? '<h1>' + mdInline(c.title, false) + '</h1>\n' : '') + mdToHtml(c.body_markdown, false);
+  if (c.schema_jsonld) html += '\n<script type="application/ld+json">\n' + String(c.schema_jsonld).replace(/<\/script/gi, '<\\/script') + '\n</' + 'script>';
+  return html;
+}
+function draftMarkdown(c) {
+  var md = (c.title ? '# ' + c.title + '\n\n' : '') + (c.body_markdown || '');
+  if (c.steps && c.steps.length) md += '\n\n## Steps\n' + c.steps.map(function (s, i) { return (i + 1) + '. ' + s; }).join('\n');
+  (c.copy_blocks || []).forEach(function (b) { md += '\n\n## ' + b.label + '\n\n' + b.text; });
+  return md;
+}
+function qualityBlock(q, grading) {
+  if (grading) return '<div class="scan-status" style="margin:0 0 4px"><div class="spinner"></div><span>Checking facts, compliance, structure and readability. About 30 seconds.</span></div>';
+  if (!q) return '';
+  var checks = (q.checks || []).slice().sort(function (x, y) { var r = function (c) { return c.pass ? 2 : c.required ? 0 : 1; }; return r(x) - r(y); });
+  return '<div class="row-between"><div><span class="qscore">' + esc(q.score) + '</span><span class="small muted"> / 100 quality</span></div>' + qualityChip(q) + '</div>' +
+    '<ul class="checks">' + checks.map(function (c) {
+      var cls = c.pass ? 'pass' : c.required ? 'fail' : 'soft';
+      return '<li class="' + cls + '"><span class="mark">' + (c.pass ? '✓' : c.required ? '✗' : '!') + '</span><span><b>' + esc(c.label) + '</b>' + (c.required ? '' : ' <span class="muted">(nice to have)</span>') + (c.note ? '<span class="muted">: ' + esc(c.note) + '</span>' : '') + '</span></li>';
+    }).join('') + '</ul>' +
+    ((q.issues || []).length ? '<div class="small muted" style="margin-top:12px">Editor notes</div>' + q.issues.map(function (i) {
+      return '<div class="issue">' + (i.quote ? '<div>“' + esc(i.quote) + '”</div>' : '') + '<div><b>' + esc(i.problem) + '</b></div>' + (i.fix ? '<div class="muted">Try: ' + esc(i.fix) + '</div>' : '') + '</div>';
+    }).join('') : '');
+}
+function draftPanel(a, d) {
+  var c = contentWithEdits(d), q = d.quality, grading = !!state.grading[d.id];
+  var isContent = CONTENT_ACTIONS.indexOf(a.type) >= 0;
+  var view = state.draftView[a.id] || 'preview';
+  var tabs = '<div class="seg" style="margin-top:14px" data-dview>' + [['preview', 'Preview'], ['edit', 'Edit'], ['details', isContent ? 'SEO & schema' : 'Details']].map(function (v) {
+    return '<button type="button" data-v="' + v[0] + '"' + (view === v[0] ? ' class="on"' : '') + '>' + v[1] + '</button>';
+  }).join('') + '</div>';
+  var main;
+  if (view === 'edit') {
+    main = '<div style="margin-top:12px"><div class="form-group"><label>Title</label><input type="text" data-e="title" value="' + esc(c.title || '') + '"></div>' +
+      '<div class="form-group"><label>' + (isContent ? 'Article (Markdown)' : 'What to do (Markdown)') + '</label><textarea class="editor" data-e="body_markdown" rows="18">' + esc(c.body_markdown || '') + '</textarea>' +
+      '<p class="help">Fill any [add figure: …] blanks with real numbers, or delete the sentence.</p></div>' +
+      (isContent ? '<div class="form-grid"><div class="form-group"><label>Meta title <span class="muted" data-count="meta_title">' + (c.meta_title || '').length + '</span></label><input type="text" data-e="meta_title" value="' + esc(c.meta_title || '') + '"></div>' +
+        '<div class="form-group"><label>Meta description <span class="muted" data-count="meta_description">' + (c.meta_description || '').length + '</span></label><textarea rows="3" data-e="meta_description">' + esc(c.meta_description || '') + '</textarea></div></div>' : '') +
+      (c.copy_blocks || []).map(function (b, i) { return '<div class="form-group"><label>' + esc(b.label) + '</label><textarea rows="5" data-e="cb:' + i + '">' + esc(b.text) + '</textarea></div>'; }).join('') +
+      '<div class="form-actions"><button class="btn btn-primary btn-sm" type="button" data-recheck' + (grading ? ' disabled' : '') + '>Save &amp; re-check</button>' + (state.edits[d.id] ? '<span class="small muted">Unsaved changes</span>' : '') + '</div></div>';
+  } else if (view === 'details') {
+    var kv = function (k, v) { return v ? '<dt>' + esc(k) + '</dt><dd>' + v + '</dd>' : ''; };
+    var list = function (arr, f) { return arr && arr.length ? '<ul style="margin:0;padding-left:18px">' + arr.map(f).join('') + '</ul>' : ''; };
+    main = '<dl class="kv">' +
+      kv('Meta title', c.meta_title ? esc(c.meta_title) + ' <span class="muted">(' + c.meta_title.length + ')</span>' : '') +
+      kv('Meta description', c.meta_description ? esc(c.meta_description) + ' <span class="muted">(' + c.meta_description.length + ')</span>' : '') +
+      kv('Suggested URL', c.slug ? '/' + esc(c.slug) : '') +
+      kv('Author', c.author ? esc([c.author.name, c.author.title, c.author.company].filter(Boolean).join(', ')) : '') +
+      kv('What changed', list(c.changes, function (x) { return '<li>' + esc(x) + '</li>'; })) +
+      kv('Internal links', list(c.internal_links, function (l) { return '<li>' + esc(l.anchor) + ' → <a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.url.replace(/^https?:\/\/(www\.)?/, '')) + '</a></li>'; })) +
+      kv('Sources cited', list(c.citations, function (l) { return '<li><a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label || l.url) + '</a></li>'; })) +
+      kv('Image ideas', list(c.images, function (i) { return '<li>' + esc(i.description) + (i.alt ? ' <span class="muted">(alt: ' + esc(i.alt) + ')</span>' : '') + '</li>'; })) +
+      kv('Call to action', c.cta ? esc(c.cta) : '') +
+      '</dl>' + (c.schema_jsonld ? '<div class="small muted" style="margin-top:12px">Schema (JSON-LD), included in Copy HTML</div><pre class="codebox">' + esc(c.schema_jsonld) + '</pre>' : '');
+  } else {
+    main = '<div class="preview">' + (c.title ? '<h1>' + mdInline(c.title, true) + '</h1>' : '') + mdToHtml(c.body_markdown, true) +
+      (c.steps && c.steps.length ? '<h2>Steps</h2><ol>' + c.steps.map(function (s) { return '<li>' + mdInline(s, true) + '</li>'; }).join('') + '</ol>' : '') + '</div>' +
+      (c.copy_blocks || []).map(function (b, i) { return '<div class="copyblock"><div class="row-between"><b class="small">' + esc(b.label) + '</b><button class="btn-link" type="button" data-copy="cb:' + i + '">Copy</button></div><pre>' + esc(b.text) + '</pre></div>'; }).join('');
+  }
+  var approve = a.status === 'drafted'
+    ? '<button class="btn btn-primary btn-sm" type="button" data-approve' + (q && q.ready && !grading && !state.edits[d.id] ? '' : ' disabled') + '>Approve</button>'
+    : '';
+  var why = a.status === 'drafted' && !grading ? (state.edits[d.id] ? 'Save & re-check your edits to approve.' : q && !q.ready ? 'Approve unlocks when every required check passes.' : '') : '';
+  return '<div class="row-between"><div class="small muted">Draft v' + esc(d.version) + (d.model ? ' · written by ' + esc(d.model) : '') + ' · ' + esc(fmtDate(d.updated_at, true)) + '</div></div>' +
+    '<div style="margin-top:10px">' + qualityBlock(q, grading) + (!q && !grading ? '<div class="act-buttons" style="margin-top:0"><button class="btn btn-primary btn-sm" type="button" data-checknow>Check this draft</button><span class="small muted">Checks facts, compliance and structure before you approve.</span></div>' : '') + '</div>' + tabs + main +
+    '<div class="act-buttons">' + approve + '<button class="btn btn-ghost btn-sm" type="button" data-copy="html">Copy HTML</button><button class="btn btn-ghost btn-sm" type="button" data-copy="md">Copy Markdown</button>' +
+    (why ? '<span class="small muted">' + esc(why) + '</span>' : '') + '</div>';
+}
+function copyText(text) {
+  var fallback = function () {
+    var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    toast(ok ? 'Copied' : 'Couldn’t copy. Select the text and copy it yourself.');
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('Copied'); }, fallback);
+    else fallback();
+  } catch (e) { fallback(); }
+}
+function bindDraftPanel(el, a, d) {
+  el.querySelectorAll('[data-dview] button').forEach(function (b) {
+    b.addEventListener('click', function () { state.draftView[a.id] = b.dataset.v; el.innerHTML = draftPanel(a, d); bindDraftPanel(el, a, d); });
+  });
+  el.querySelectorAll('[data-e]').forEach(function (inp) {
+    inp.addEventListener('input', function () {
+      (state.edits[d.id] = state.edits[d.id] || {})[inp.dataset.e] = inp.value;
+      var cnt = el.querySelector('[data-count="' + inp.dataset.e + '"]'); if (cnt) cnt.textContent = inp.value.length;
+      var ap = el.querySelector('[data-approve]'); if (ap) ap.disabled = true;
+    });
+  });
+  var cn = el.querySelector('[data-checknow]');
+  if (cn) cn.addEventListener('click', function () { gradeDraft(a, d, null); });
+  var rc = el.querySelector('[data-recheck]');
+  if (rc) rc.addEventListener('click', function () { gradeDraft(a, d, contentWithEdits(d)); });
+  var ap = el.querySelector('[data-approve]');
+  if (ap) ap.addEventListener('click', async function () {
+    ap.disabled = true;
+    try { await api('action_update', null, { id: a.id, op: 'approve' }); toast('Approved. Publish it on your site, then mark it published.', 5000); state.actOpen[a.id] = 'publish'; await loadActions(); refreshOverview().catch(function () {}); }
+    catch (e) { ap.disabled = false; fail('Could not approve: ')(e); }
+  });
+  el.querySelectorAll('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var c = contentWithEdits(d), k = b.dataset.copy;
+      if (k === 'html') copyText(draftHtml(c));
+      else if (k === 'md') copyText(draftMarkdown(c));
+      else if (k.indexOf('cb:') === 0) copyText(((c.copy_blocks || [])[Number(k.slice(3))] || {}).text || '');
+    });
+  });
 }
 
 /* ---------- competitors ---------- */
