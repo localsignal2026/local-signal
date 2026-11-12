@@ -267,6 +267,36 @@ textarea { resize: vertical; min-height: 76px; }
 .pipe.good b { color: var(--green); }
 .opp-btns { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
 .editor { font-family: var(--mono); font-size: 13px !important; line-height: 1.5; min-height: 320px; }
+.shared { font-size: 13px; color: var(--fg-muted); margin: 6px 0 0; }
+.shared b { color: var(--fg); font-weight: 600; }
+.shared-ref { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; min-width: 0; }
+.shared-ref:last-child { border-bottom: 0; }
+.fmt { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-top: 10px; min-width: 0; }
+.fmt textarea { background: var(--bg-input); font-size: 14px; min-height: 120px; margin-top: 6px; }
+.fmt .meta { margin-left: 6px; }
+
+/* ---------- Topic x market grid ---------- */
+.mx-wrap { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+.mx { border-collapse: separate; border-spacing: 4px; width: 100%; min-width: 520px; font-size: 13px; }
+.mx th { font-weight: 600; color: var(--fg-muted); font-size: 12px; text-align: left; padding: 4px 6px; vertical-align: middle; }
+.mx thead th { vertical-align: bottom; }
+.mx th.mk { text-align: center; min-width: 88px; }
+.mx td { text-align: center; border-radius: 6px; padding: 0; height: 52px; }
+.mx td.na { color: var(--fg-dim); }
+.mx button { width: 100%; height: 100%; min-height: 52px; border: 1px solid transparent; border-radius: 6px; background: var(--bg-input); color: var(--fg); cursor: pointer; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: inherit; }
+.mx button:hover { border-color: var(--accent); }
+.mx button.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.mx button b { font-family: var(--mono); font-size: 14px; }
+.mx button span { font-size: 11px; color: var(--fg-muted); }
+.mx button.h0 { background: var(--red-dim); } .mx button.h0 b { color: var(--red); }
+.mx button.h1 { background: var(--orange-dim); } .mx button.h1 b { color: var(--orange); }
+.mx button.h2 { background: var(--green-dim); } .mx button.h2 b { color: var(--green); }
+.mx .tot { color: var(--fg-muted); font-family: var(--mono); font-size: 12px; }
+.focus-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+.focus-list li { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+.focus-list .score { padding: 1px 0; }
+.mx-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--fg-muted); margin-top: 10px; }
+.mx-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
 
 .toast { visibility: hidden; position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(160px); background: var(--bg-raised); border: 1px solid var(--border); color: var(--fg); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; z-index: 999; transition: transform 0.3s ease; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 .toast.show { visibility: visible; transform: translateX(-50%) translateY(0); }
@@ -367,6 +397,11 @@ textarea { resize: vertical; min-height: 76px; }
       <div class="card">
         <div class="card-head"><p class="card-title">Opportunity queue</p><p class="card-sub">score = market tier × priority × buying intent × how open the question is</p></div>
         <div id="ov-opps"><div class="empty">Nothing yet.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><p class="card-title">Topic × market</p><p class="card-sub">share of AI answers that name you, latest full scan · tap a cell</p></div>
+        <div id="ov-grid"><div class="empty">Appears after a scan.</div></div>
       </div>
 
       <div class="grid-2">
@@ -538,7 +573,8 @@ var CONTENT_ACTIONS = ['new_article', 'improve_article', 'comparison_page', 'faq
 var GAP_NAMES = { content: 'No page answers it', content_quality: 'Your page needs work', entity: "AI doesn't connect you", third_party: 'Missing on sites AI reads', reviews: 'Fewer reviews', technical: 'Technical gaps', local: 'Weak local signals', proof: 'Needs proof' };
 var TODO_STATUSES = ['recommended', 'drafting', 'drafted', 'approved'], LIVE_STATUSES = ['published', 'retesting', 'improved', 'no_change'];
 var state = { passcode: '', unlocked: false, bizId: null, businesses: [], biz: null, markets: [], ov: null, filter: 'all', open: {}, newBiz: false,
-  actions: null, actFilter: 'todo', actOpen: {}, recommending: {}, grading: {}, drafts: {}, edits: {}, takes: {}, draftView: {}, actPoll: null };
+  actions: null, actFilter: 'todo', actOpen: {}, recommending: {}, grading: {}, drafts: {}, edits: {}, takes: {}, draftView: {}, actPoll: null,
+  gridSel: null, repurposing: {}, fmtEdits: {}, fmtChecking: {} };
 var pollTimer = null, pollStarted = 0;
 
 /* ---------- helpers ---------- */
@@ -727,6 +763,7 @@ function renderOverview() {
     : '<div class="empty">' + (latest ? 'Every tracked prompt names you in at least one AI. 🎉' : 'Run a scan to find your gaps.') + '</div>';
   bindOpenPrompt($('ov-opps'));
   bindFix($('ov-opps'));
+  renderGrid();
   renderWins();
   renderPipeline();
 
@@ -963,6 +1000,58 @@ async function refreshOverview() {
   if (state.actions) renderActions();
 }
 
+/* ---------- topic x market grid (overview) ---------- */
+function heat(share) { return share == null ? '' : share === 0 ? 'h0' : share < 25 ? 'h1' : 'h2'; }
+function gridCellKey(c) { return c.topic + '|' + c.market_id; }
+function renderGrid() {
+  var g = (state.ov && state.ov.grid) || null, el = $('ov-grid');
+  if (!g || !g.cells || !g.cells.length) { el.innerHTML = '<div class="empty">Appears after a scan.</div>'; return; }
+  var byKey = {};
+  g.cells.forEach(function (c) { byKey[gridCellKey(c)] = c; });
+  var marketName = {};
+  g.markets.forEach(function (m) { marketName[m.id] = m.name; });
+  var topicName = {};
+  g.topics.forEach(function (t) { topicName[t.key] = t.label; });
+  var sel = state.gridSel && byKey[state.gridSel] ? state.gridSel : null;
+  var head = '<tr><th></th>' + g.markets.map(function (m) { return '<th class="mk">' + esc(m.name) + '</th>'; }).join('') + '<th class="mk">All</th></tr>';
+  var rows = g.topics.map(function (t) {
+    return '<tr><th>' + esc(t.label) + '</th>' + g.markets.map(function (m) {
+      var c = byKey[t.key + '|' + m.id];
+      if (!c) return '<td class="na">·</td>';
+      var k = gridCellKey(c);
+      var label = c.share == null ? 'not scanned' : c.visible + '/' + c.ok + ' answers';
+      return '<td><button type="button" class="' + heat(c.share) + (k === sel ? ' sel' : '') + '" data-cell="' + esc(k) + '" aria-label="' + esc(t.label + ', ' + m.name + ': ' + (c.share == null ? 'not scanned' : c.share + '% of answers name you')) + '">' +
+        '<b>' + (c.share == null ? '–' : c.share + '%') + '</b><span>' + esc(c.prompts.length + ' q · ' + label) + '</span></button></td>';
+    }).join('') + '<td class="tot">' + (t.share == null ? '–' : t.share + '%') + '</td></tr>';
+  }).join('');
+  var foot = '<tr><th>All</th>' + g.markets.map(function (m) { return '<td class="tot">' + (m.share == null ? '–' : m.share + '%') + '</td>'; }).join('') + '<td></td></tr>';
+  var focus = (g.focus || []).map(function (f, i) {
+    var what = f.ok ? (f.open === f.ok ? 'AI names nobody' : f.visible ? 'named in ' + f.visible + ' of ' + f.ok : 'AI names others') : 'not scanned yet';
+    return '<li><span class="score" title="Total opportunity">' + esc(f.opportunity) + '</span><span class="grow"><b>' + esc(topicName[f.topic] || f.topic) + ' · ' + esc(marketName[f.market_id] || '') + '</b> <span class="muted">— ' + esc(f.prompts + ' question' + (f.prompts === 1 ? '' : 's') + ', ' + what) + '</span></span>' +
+      '<button class="btn-link" type="button" data-cell="' + esc(f.topic + '|' + f.market_id) + '">Show</button></li>';
+  }).join('');
+  var detail = '';
+  if (sel) {
+    var c = byKey[sel];
+    var ps = c.prompts.map(promptById).filter(Boolean).sort(function (a, b) { return (b.opportunity || 0) - (a.opportunity || 0); });
+    detail = '<div class="box"><div class="row-between"><b>' + esc((topicName[c.topic] || c.topic) + ' · ' + (marketName[c.market_id] || '')) + '</b><button class="btn-link" type="button" data-cell-close>Close</button></div>' +
+      ps.map(function (p) {
+        return '<div class="list-row"><span class="score" title="Opportunity score (0–100)">' + esc(p.opportunity == null ? '–' : p.opportunity) + '</span><div class="grow"><div class="name">' + esc(p.prompt) + '</div><div class="chips">' + statusChip(p) + contentChip(p) + fixChip(p) + '</div></div>' +
+          '<div class="opp-btns">' + fixButton(p, 'btn btn-ghost btn-sm') + '<button class="btn-link" type="button" data-open-prompt="' + esc(p.id) + '">Answers</button></div></div>';
+      }).join('') + '</div>';
+  }
+  el.innerHTML = '<div class="mx-wrap"><table class="mx"><thead>' + head + '</thead><tbody>' + rows + foot + '</tbody></table></div>' +
+    '<div class="mx-legend"><span><i style="background:var(--red-dim);border:1px solid var(--red)"></i>AI never names you</span><span><i style="background:var(--orange-dim);border:1px solid var(--orange)"></i>under 25%</span><span><i style="background:var(--green-dim);border:1px solid var(--green)"></i>25% or more</span></div>' +
+    (focus ? '<p class="small muted" style="margin:14px 0 0">Focus here first</p><ol class="focus-list">' + focus + '</ol>' : '') + detail;
+  el.querySelectorAll('[data-cell]').forEach(function (b) {
+    b.addEventListener('click', function () { state.gridSel = state.gridSel === b.dataset.cell ? null : b.dataset.cell; renderGrid(); });
+  });
+  var close = el.querySelector('[data-cell-close]');
+  if (close) close.addEventListener('click', function () { state.gridSel = null; renderGrid(); });
+  bindOpenPrompt(el);
+  bindFix(el);
+}
+
 /* ---------- wins + fixes pipeline (overview) ---------- */
 function renderWins() {
   var w = (state.ov && state.ov.wins) || [];
@@ -1032,8 +1121,8 @@ async function fixPrompt(sid) {
   showTab('actions'); renderActions(); scrollToGroup(sid);
   try {
     var r = await api('recommend', null, { scenario_id: sid }, 150000);
-    var n = r.data && r.data.actions ? r.data.actions.length : 0;
-    toast(n ? 'Here ' + (n === 1 ? 'is the fix' : 'are ' + n + ' fixes') + ', best first' : 'Done');
+    var n = r.data && r.data.actions ? r.data.actions.length : 0, reused = (r.data && r.data.reused) || 0;
+    toast(n ? 'Here ' + (n === 1 ? 'is the fix' : 'are ' + n + ' fixes') + ', best first' + (reused ? ' (' + reused + ' already on your list, now shared)' : '') : 'Done', reused ? 5000 : 3000);
   } catch (e) { fail('Could not work out the fix: ')(e); }
   finally {
     delete state.recommending[sid];
@@ -1046,24 +1135,43 @@ var IMPACT_RANK = { high: 0, medium: 1, low: 2 }, EFFORT_RANK = { low: 0, medium
 function sortActs(a, b) {
   return (IMPACT_RANK[a.impact] - IMPACT_RANK[b.impact]) || (EFFORT_RANK[a.effort] - EFFORT_RANK[b.effort]) || String(a.title).localeCompare(String(b.title));
 }
+// Every question a fix helps (shared fixes help several).
+function actPrompts(a) { return a.prompt_ids && a.prompt_ids.length ? a.prompt_ids : [a.scenario_id || 'none']; }
+// A shared fix is listed once, under the most valuable question it helps; the others point to it.
+function hostPrompt(a) {
+  var ids = actPrompts(a), best = ids[0], bestScore = -1;
+  ids.forEach(function (id) { var p = promptById(id); var s = p ? (p.is_active ? 1000 : 0) + (p.opportunity || 0) : -1; if (s > bestScore) { best = id; bestScore = s; } });
+  return best;
+}
+function promptLabel(id) { var p = promptById(id); return p ? (p.label || p.prompt) : 'another question'; }
 function renderActions() {
   var all = state.actions || [], f = state.actFilter;
   var list = all.filter(function (a) { return f === 'all' || (f === 'todo' ? TODO_STATUSES.indexOf(a.status) >= 0 : LIVE_STATUSES.indexOf(a.status) >= 0); });
   var groups = {}, order = [];
-  list.forEach(function (a) { var k = a.scenario_id || 'none'; if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(a); });
-  Object.keys(state.recommending).forEach(function (sid) { if (!groups[sid]) { groups[sid] = []; order.push(sid); } });
+  var slot = function (k) { if (!groups[k]) { groups[k] = { acts: [], refs: [] }; order.push(k); } return groups[k]; };
+  list.forEach(function (a) {
+    var host = hostPrompt(a);
+    slot(host).acts.push(a);
+    actPrompts(a).forEach(function (sid) { if (sid !== host) slot(sid).refs.push({ a: a, host: host }); });
+  });
+  Object.keys(state.recommending).forEach(function (sid) { slot(sid); });
   order.sort(function (x, y) { return ((promptById(y) || {}).opportunity || 0) - ((promptById(x) || {}).opportunity || 0); });
   var todo = all.filter(function (a) { return TODO_STATUSES.indexOf(a.status) >= 0; }).length;
   var live = all.filter(function (a) { return LIVE_STATUSES.indexOf(a.status) >= 0; }).length;
   $('action-count').textContent = todo + ' to do · ' + live + ' published';
-  $('action-list').innerHTML = order.length ? order.map(function (sid) { return actionGroup(sid, groups[sid]); }).join('')
+  $('action-list').innerHTML = order.length ? order.map(function (sid) { return actionGroup(sid, groups[sid].acts, groups[sid].refs); }).join('')
     : '<div class="card empty"><h3>' + (f === 'live' ? 'Nothing published yet' : 'No fixes here yet') + '</h3><p>' +
       (f === 'live' ? 'When you publish an approved fix, it shows up here with its re-test results.' : 'Tap “Fix it” on a question in the Opportunity queue (Overview tab) and Local Signal will work out what to change.') + '</p></div>';
   bindActions($('action-list'));
 }
-function actionGroup(sid, acts) {
+function sharedRef(r) {
+  return '<div class="shared-ref"><span class="chip t1">Shared fix</span><span class="grow">' + esc(r.a.title) + ' <span class="muted">— listed under “' + esc(promptLabel(r.host)) + '”</span></span>' +
+    '<button class="btn-link" type="button" data-goto-act="' + esc(r.a.id) + '">Go to it</button></div>';
+}
+function actionGroup(sid, acts, refs) {
+  refs = refs || [];
   var p = promptById(sid);
-  var ev = ((acts.filter(function (a) { return a.evidence && a.evidence.diagnosis; })[0]) || {}).evidence || {};
+  var ev = (p && p.last_diagnosis) || ((acts.filter(function (a) { return a.scenario_id === sid && a.evidence && a.evidence.diagnosis; })[0]) || {}).evidence || {};
   var busy = !!state.recommending[sid];
   var promptText = p ? p.prompt : (acts[0] && acts[0].prompt) || 'Other';
   var head = '<div class="act-group-head"><div class="row-between" style="align-items:flex-start"><div class="grow"><div class="prompt-q">' + esc(promptText) + '</div>' +
@@ -1073,10 +1181,10 @@ function actionGroup(sid, acts) {
       var cs = p && p.content ? p.content.state : null;
       return !((g.type === 'content_quality' && cs === 'partial') || (g.type === 'content' && cs === 'none'));
     }).map(function (g) { return '<span class="chip warn" title="' + esc(g.evidence) + '">' + esc(GAP_NAMES[g.type] || g.type) + '</span>'; }).join('') + '</div></div>' +
-    (p && !busy && acts.length && state.actFilter !== 'live' ? '<button class="btn-link" type="button" data-rediagnose="' + esc(sid) + '">Re-diagnose</button>' : '') + '</div>' +
+    (p && !busy && (acts.length || refs.length) && state.actFilter !== 'live' ? '<button class="btn-link" type="button" data-rediagnose="' + esc(sid) + '">Re-diagnose</button>' : '') + '</div>' +
     (ev.diagnosis ? '<p class="act-diag"><span class="muted">Why AI picks others: </span>' + esc(ev.diagnosis) + '</p>' : '') +
     (busy ? '<div class="scan-status" style="margin:12px 0 0"><div class="spinner"></div><span>Reading the AI answers and your website to work out the fix. About 30 seconds.</span></div>' : '') + '</div>';
-  return '<div class="act-group" id="ag-' + esc(sid) + '">' + head + acts.slice().sort(sortActs).map(actionCard).join('') + '</div>';
+  return '<div class="act-group" id="ag-' + esc(sid) + '">' + head + acts.slice().sort(sortActs).map(function (a) { return actionCard(a, sid); }).join('') + refs.map(sharedRef).join('') + '</div>';
 }
 function statusTag(a) {
   var m = { recommended: ['To do', ''], drafting: ['Writing…', 't1'], drafted: ['Draft ready', 't1'], approved: ['Approved', 'ok'], published: ['Published', 'ok'], retesting: ['Re-testing', 'ok'], improved: ['Visibility up', 'ok'], no_change: ['No change yet', 'warn'], dismissed: ['Dismissed', ''] }[a.status] || [a.status, ''];
@@ -1087,13 +1195,18 @@ function qualityChip(q) {
   var failing = (q.checks || []).filter(function (c) { return c.required && !c.pass; }).length;
   return q.ready ? '<span class="chip ok">Score ' + q.score + ' · ready</span>' : '<span class="chip no">Score ' + q.score + ' · ' + failing + ' to fix</span>';
 }
-function actionCard(a) {
+function actionCard(a, hostSid) {
   var d = a.draft, open = state.actOpen[a.id];
+  var others = actPrompts(a).filter(function (id) { return id !== hostSid && id !== 'none'; });
   var chips = '<div class="chips" style="margin-top:0"><span class="chip t1">' + esc(ACTION_NAMES[a.type] || a.type) + '</span>' + statusTag(a) +
-    '<span class="chip">Impact: ' + esc(a.impact) + '</span><span class="chip">Effort: ' + esc(a.effort) + '</span>' + (a.status === 'drafted' ? qualityChip(d && d.quality) : '') + '</div>';
-  var target = a.target_url ? '<p class="small" style="margin:6px 0 0"><span class="muted">Page to improve:</span> <a href="' + esc(a.target_url) + '" target="_blank" rel="noopener">' + esc(a.target_url.replace(/^https?:\/\/(www\.)?/, '')) + '</a></p>' : '';
+    '<span class="chip">Impact: ' + esc(a.impact) + '</span><span class="chip">Effort: ' + esc(a.effort) + '</span>' + (a.status === 'drafted' ? qualityChip(d && d.quality) : '') +
+    (others.length ? '<span class="chip ok">Helps ' + (others.length + 1) + ' questions</span>' : '') + '</div>';
+  var target = (a.target_url ? '<p class="small" style="margin:6px 0 0"><span class="muted">Page to improve:</span> <a href="' + esc(a.target_url) + '" target="_blank" rel="noopener">' + esc(a.target_url.replace(/^https?:\/\/(www\.)?/, '')) + '</a></p>' : '') +
+    (others.length ? '<p class="shared">Also helps: ' + others.map(function (id) { return '<b>' + esc(promptLabel(id)) + '</b>'; }).join(', ') + '</p>' : '') +
+    (a.evidence && a.evidence.flags && a.evidence.flags.length ? '<p class="small" style="color:var(--orange);margin:6px 0 0">Fair Housing: reword ' + a.evidence.flags.map(function (x) { return '“' + esc(x.phrase) + '”'; }).join(', ') + ' before publishing.</p>' : '');
   var btns = [], extra = '';
   var draftBtn = d && d.status === 'ready' ? '<button class="btn btn-ghost btn-sm" type="button" data-toggle="draft" data-aid="' + esc(a.id) + '">' + (open === 'draft' ? 'Hide draft' : 'Open draft') + '</button>' : '';
+  var fmtBtn = d && d.status === 'ready' ? '<button class="btn btn-ghost btn-sm" type="button" data-toggle="formats" data-aid="' + esc(a.id) + '">' + (open === 'formats' ? 'Hide other formats' : 'Other formats') + '</button>' : '';
   if (a.status === 'recommended') {
     btns.push('<button class="btn btn-primary btn-sm" type="button" data-toggle="take" data-aid="' + esc(a.id) + '">' + (d ? 'Try again' : 'Write it') + '</button>');
     btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="dismiss" data-aid="' + esc(a.id) + '">Not now</button>');
@@ -1107,10 +1220,12 @@ function actionCard(a) {
   } else if (a.status === 'approved') {
     btns.push('<button class="btn btn-primary btn-sm" type="button" data-toggle="publish" data-aid="' + esc(a.id) + '">Mark as published</button>');
     btns.push(draftBtn);
+    btns.push(fmtBtn);
     btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="unapprove" data-aid="' + esc(a.id) + '">Back to draft</button>');
   } else if (LIVE_STATUSES.indexOf(a.status) >= 0) {
     extra = retestBlock(a);
     btns.push(draftBtn);
+    btns.push(fmtBtn);
     btns.push('<button class="btn btn-ghost btn-sm" type="button" data-toggle="publish" data-aid="' + esc(a.id) + '">Edit published details</button>');
   } else if (a.status === 'dismissed') {
     btns.push('<button class="btn btn-ghost btn-sm" type="button" data-update="restore" data-aid="' + esc(a.id) + '">Restore</button>');
@@ -1118,6 +1233,7 @@ function actionCard(a) {
   var panel = '';
   if (open === 'take' && (a.status === 'recommended' || a.status === 'drafted')) panel = takeForm(a);
   else if (open === 'draft' && d && d.status === 'ready') panel = '<div class="box" data-draft-panel="' + esc(d.id) + '" data-aid="' + esc(a.id) + '"><div class="small muted">Loading draft…</div></div>';
+  else if (open === 'formats' && d && d.status === 'ready') panel = '<div class="box" data-formats-panel="' + esc(d.id) + '" data-aid="' + esc(a.id) + '"><div class="small muted">Loading…</div></div>';
   else if (open === 'publish') panel = publishForm(a);
   return '<div class="act' + (a.status === 'dismissed' ? ' dim' : '') + '" id="act-' + esc(a.id) + '">' + chips +
     '<div class="act-title">' + esc(a.title) + '</div>' + (a.why ? '<p class="act-why">' + esc(a.why) + '</p>' : '') + target + extra +
@@ -1237,6 +1353,95 @@ function bindActions(root) {
   root.querySelectorAll('[data-draft-panel]').forEach(function (el) {
     var a = (state.actions || []).filter(function (x) { return x.id === el.dataset.aid; })[0];
     if (a) fillDraftPanel(el, a);
+  });
+  root.querySelectorAll('[data-formats-panel]').forEach(function (el) {
+    var a = (state.actions || []).filter(function (x) { return x.id === el.dataset.aid; })[0];
+    if (a) fillFormatsPanel(el, a);
+  });
+  root.querySelectorAll('[data-goto-act]').forEach(function (b) {
+    b.addEventListener('click', function () { var el = $('act-' + b.dataset.gotoAct); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  });
+}
+
+/* ---------- other formats: FAQ block, Google post, Instagram caption, video script ---------- */
+var FORMAT_FIELDS = [
+  ['faq_markdown', 'FAQ block', 'Add under the article, or on its own page. Copy the schema too.', 0],
+  ['gbp', 'Google Business Profile post', 'Paste into Google Business Profile → Add update. Use the button to link to the page.', 1500],
+  ['instagram', 'Instagram caption', '', 2200],
+  ['video', 'Video script (30–45 seconds)', 'Hook first, then the beats. Film vertical.', 0],
+];
+async function fillFormatsPanel(el, a) {
+  var id = a.draft.id, d = state.drafts[id];
+  if (!d || d.updated_at !== a.draft.updated_at) {
+    try { d = (await api('draft_get', { draft_id: id })).data; state.drafts[id] = d; }
+    catch (e) { if (!(e instanceof AuthError) && el.isConnected) el.innerHTML = '<div class="small" style="color:var(--red)">' + esc(e.message) + '</div>'; return; }
+  }
+  if (!el.isConnected) return;
+  el.innerHTML = formatsPanel(a, d);
+  bindFormatsPanel(el, a, d);
+}
+function formatsWithEdits(d) {
+  var f = Object.assign({}, d.formats || {}), e = state.fmtEdits[d.id];
+  if (e) Object.keys(e).forEach(function (k) { f[k] = e[k]; });
+  return f;
+}
+function formatsPanel(a, d) {
+  var busy = !!state.repurposing[a.id];
+  if (busy) return '<div class="scan-status" style="margin:0"><div class="spinner"></div><span>Turning the approved piece into an FAQ block, a Google post, an Instagram caption and a video script. About a minute.</span></div>';
+  if (!d.formats) {
+    return '<p class="small" style="margin:0 0 12px">Turn this approved piece into four more formats, written only from what you approved: an FAQ block (with schema), a Google Business Profile post, an Instagram caption and a short video script. Each is checked for the place name, Fair Housing wording and platform limits.</p>' +
+      '<div class="act-buttons" style="margin-top:0"><button class="btn btn-primary btn-sm" type="button" data-make-formats>Make the other formats</button></div>';
+  }
+  var f = formatsWithEdits(d), dirty = !!state.fmtEdits[d.id];
+  var checks = (d.formats.checks || []).slice().sort(function (x, y) { var r = function (c) { return c.pass ? 2 : c.required ? 0 : 1; }; return r(x) - r(y); });
+  var failing = checks.filter(function (c) { return c.required && !c.pass; }).length;
+  var head = '<div class="row-between"><div class="small muted">From draft v' + esc(d.formats.source_version || d.version) + (d.formats.model ? ' · ' + esc(d.formats.model) : '') + (d.formats.created_at ? ' · ' + esc(fmtDate(d.formats.created_at, true)) : '') + '</div>' +
+    (d.formats.ready ? '<span class="chip ok">Ready to post</span>' : '<span class="chip no">' + failing + ' to fix</span>') + '</div>' +
+    '<ul class="checks">' + checks.map(function (c) { return '<li class="' + (c.pass ? 'pass' : c.required ? 'fail' : 'soft') + '"><span class="mark">' + (c.pass ? '✓' : c.required ? '✗' : '!') + '</span><span><b>' + esc(c.label) + '</b> <span class="muted">' + esc(c.note) + '</span></span></li>'; }).join('') + '</ul>';
+  var blocks = FORMAT_FIELDS.map(function (x) {
+    var v = String(f[x[0]] || ''), lim = x[3];
+    return '<div class="fmt"><div class="row-between"><b class="small">' + esc(x[1]) + (lim ? '<span class="meta" data-fcount="' + x[0] + '">' + v.length + ' / ' + lim.toLocaleString() + '</span>' : '') + '</b>' +
+      '<span class="form-actions"><button class="btn-link" type="button" data-fcopy="' + x[0] + '">Copy</button>' + (x[0] === 'faq_markdown' && d.formats.faq_schema ? '<button class="btn-link" type="button" data-fcopy="faq_schema">Copy FAQ schema</button>' : '') + '</span></div>' +
+      (x[2] ? '<p class="help" style="margin:4px 0 0">' + esc(x[2]) + '</p>' : '') +
+      '<textarea rows="' + (x[0] === 'gbp' ? 6 : 9) + '" data-fe="' + x[0] + '">' + esc(v) + '</textarea></div>';
+  }).join('');
+  return head + blocks + '<div class="act-buttons"><button class="btn btn-primary btn-sm" type="button" data-fcheck' + (state.fmtChecking[d.id] ? ' disabled' : '') + '>' + (state.fmtChecking[d.id] ? 'Checking…' : 'Save &amp; re-check') + '</button>' +
+    '<button class="btn btn-ghost btn-sm" type="button" data-make-formats>Write new versions</button>' + (dirty ? '<span class="small muted">Unsaved changes</span>' : '') + '</div>';
+}
+function bindFormatsPanel(el, a, d) {
+  var rerender = function () { if (el.isConnected) { el.innerHTML = formatsPanel(a, state.drafts[d.id] || d); bindFormatsPanel(el, a, state.drafts[d.id] || d); } };
+  el.querySelectorAll('[data-fe]').forEach(function (t) {
+    t.addEventListener('input', function () {
+      (state.fmtEdits[d.id] = state.fmtEdits[d.id] || {})[t.dataset.fe] = t.value;
+      var c = el.querySelector('[data-fcount="' + t.dataset.fe + '"]');
+      if (c) { var lim = FORMAT_FIELDS.filter(function (x) { return x[0] === t.dataset.fe; })[0][3]; c.textContent = t.value.length + ' / ' + lim.toLocaleString(); }
+    });
+  });
+  el.querySelectorAll('[data-fcopy]').forEach(function (b) {
+    b.addEventListener('click', function () { var f = formatsWithEdits(d); copyText(String(f[b.dataset.fcopy] || '')); });
+  });
+  var mk = el.querySelector('[data-make-formats]');
+  if (mk) mk.addEventListener('click', async function () {
+    if (d.formats && !mk.dataset.armed) { mk.dataset.armed = '1'; mk.textContent = 'Replace these versions?'; mk.style.color = 'var(--red)'; setTimeout(function () { if (mk.isConnected) { delete mk.dataset.armed; mk.textContent = 'Write new versions'; mk.style.color = ''; } }, 3500); return; }
+    state.repurposing[a.id] = true; rerender();
+    try {
+      var r = await api('repurpose', null, { action_id: a.id }, 160000);
+      var cur = state.drafts[d.id] || d;
+      cur.formats = r.data.formats; state.drafts[d.id] = cur; delete state.fmtEdits[d.id];
+      toast(cur.formats.ready ? 'Other formats ready' : 'Formats written. A few checks need fixing.', 4000);
+    } catch (e) { fail('Could not make the formats: ')(e); }
+    finally { delete state.repurposing[a.id]; rerender(); }
+  });
+  var ck = el.querySelector('[data-fcheck]');
+  if (ck) ck.addEventListener('click', async function () {
+    state.fmtChecking[d.id] = true; rerender();
+    try {
+      var r = await api('formats_check', null, { draft_id: d.id, formats: formatsWithEdits(d) }, 40000);
+      var cur = state.drafts[d.id] || d;
+      cur.formats = r.data.formats; state.drafts[d.id] = cur; delete state.fmtEdits[d.id];
+      toast(cur.formats.ready ? 'Saved. Ready to post.' : 'Saved. Some checks still need fixing.');
+    } catch (e) { fail('Could not check: ')(e); }
+    finally { delete state.fmtChecking[d.id]; rerender(); }
   });
 }
 
